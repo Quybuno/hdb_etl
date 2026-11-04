@@ -32,7 +32,7 @@ def run_q1_lease_curve(db_path: str) -> Dict[str, Any]:
     con.close()
 
     eval_bands = ["50-54", "55-59", "60-64", "65-69", "75-79", "80-84", "85-89"]
-    all_target_bands = ["<50"] + eval_bands + ["90+"]
+    all_target_bands = ["<50", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84", "85-89", "90+"]
 
     results_by_period = {}
     rows_to_save = []
@@ -99,15 +99,29 @@ def run_q1_lease_curve(db_path: str) -> Dict[str, Any]:
                 period_res["ci_lower"][b] = float(ci[0])
                 period_res["ci_upper"][b] = float(ci[1])
 
+                c_log = round(c, 4)
+                se_log = round(se, 4)
+                ci_l_log = round(float(ci[0]), 4)
+                ci_u_log = round(float(ci[1]), 4)
+                pct_diff = round((np.exp(c) - 1.0) * 100.0, 2)
+                ci_l_pct = round((np.exp(float(ci[0])) - 1.0) * 100.0, 2)
+                ci_u_pct = round((np.exp(float(ci[1])) - 1.0) * 100.0, 2)
+
                 rows_to_save.append({
                     "period": period_name,
                     "lease_band": b,
                     "transaction_count": int(band_counts.get(b, 0)),
-                    "coef": round(c, 4),
-                    "std_err": round(se, 4),
-                    "ci_lower": round(float(ci[0]), 4),
-                    "ci_upper": round(float(ci[1]), 4),
-                    "pct_diff_vs_ref": round((np.exp(c) - 1.0) * 100.0, 2),
+                    "coef": c_log,
+                    "coef_log": c_log,
+                    "std_err": se_log,
+                    "std_err_log": se_log,
+                    "ci_lower": ci_l_log,
+                    "ci_lower_log": ci_l_log,
+                    "ci_upper": ci_u_log,
+                    "ci_upper_log": ci_u_log,
+                    "pct_diff_vs_ref": pct_diff,
+                    "ci_lower_pct": ci_l_pct,
+                    "ci_upper_pct": ci_u_pct,
                     "is_reference": False
                 })
             elif b == "70-74":
@@ -116,10 +130,16 @@ def run_q1_lease_curve(db_path: str) -> Dict[str, Any]:
                     "lease_band": "70-74",
                     "transaction_count": int(band_counts.get("70-74", 0)),
                     "coef": 0.0,
+                    "coef_log": 0.0,
                     "std_err": 0.0,
+                    "std_err_log": 0.0,
                     "ci_lower": 0.0,
+                    "ci_lower_log": 0.0,
                     "ci_upper": 0.0,
+                    "ci_upper_log": 0.0,
                     "pct_diff_vs_ref": 0.0,
+                    "ci_lower_pct": 0.0,
+                    "ci_upper_pct": 0.0,
                     "is_reference": True
                 })
 
@@ -140,12 +160,36 @@ def run_q1_lease_curve(db_path: str) -> Dict[str, Any]:
     spearman_corr, _ = spearmanr(coefs_p1, coefs_p2)
     spearman_ok = (spearman_corr >= 0.90)
 
-    # Criterion 3: Sai khác tuyệt đối giữa hai giai đoạn <= 5 điểm phần trăm ở các nhóm từ 50-85 năm
+    # Criterion 3: Độ chênh lệch giữa hai giai đoạn <= 5 điểm phần trăm ở các nhóm từ 50-85 năm
     bands_50_85 = ["50-54", "55-59", "60-64", "65-69", "75-79", "80-84"]
     max_abs_diff = max(abs(p1["coefs"][b] - p2["coefs"][b]) for b in bands_50_85)
     diff_ok = (max_abs_diff <= 0.05)
 
     overall_passed = bool(count_ok and spearman_ok and diff_ok)
+
+    comparison_rows = []
+    for b in all_target_bands:
+        c1 = p1["coefs"].get(b, 0.0)
+        c2 = p2["coefs"].get(b, 0.0)
+        p1_cnt = p1["counts"].get(b, 0)
+        p2_cnt = p2["counts"].get(b, 0)
+        p1_pct = (np.exp(c1) - 1.0) * 100.0
+        p2_pct = (np.exp(c2) - 1.0) * 100.0
+        diff_log = c2 - c1
+        diff_pct = p2_pct - p1_pct
+        comparison_rows.append({
+            "lease_band": b,
+            "count_p1": p1_cnt,
+            "count_p2": p2_cnt,
+            "coef_log_p1": round(c1, 4),
+            "coef_log_p2": round(c2, 4),
+            "diff_log_points": round(diff_log, 4),
+            "abs_diff_log_points": round(abs(diff_log), 4),
+            "pct_diff_p1": round(p1_pct, 2),
+            "pct_diff_p2": round(p2_pct, 2),
+            "diff_pct_points": round(diff_pct, 2),
+            "abs_diff_pct_points": round(abs(diff_pct), 2)
+        })
 
     summary = {
         "status": "PASS" if overall_passed else "FAIL",
@@ -168,7 +212,8 @@ def run_q1_lease_curve(db_path: str) -> Dict[str, Any]:
             }
         },
         "details_by_period": results_by_period,
-        "dataframe": pd.DataFrame(rows_to_save)
+        "dataframe": pd.DataFrame(rows_to_save),
+        "comparison_dataframe": pd.DataFrame(comparison_rows)
     }
 
     return summary

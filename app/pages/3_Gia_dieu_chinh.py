@@ -86,15 +86,16 @@ fig.update_layout(
 
 st.plotly_chart(fig, use_container_width=True)
 
-# Latest gap metric
+# Latest gap metric (Main full-year comparison: 2019 -> 2025)
+full_year_row = sub_df[sub_df["year"] == 2025].iloc[0] if (sub_df["year"] == 2025).any() else sub_df.sort_values("year").iloc[-1]
 latest_row = sub_df.sort_values("year").iloc[-1]
-base_row = sub_df[sub_df["year"] == 2019].iloc[0]
 
 c1, c2, c3 = st.columns(3)
-c1.metric(f"Tăng giá thô (2019 -> {latest_row['year']})", f"+{latest_row['raw_price_index'] - 100:.1f}%")
-c2.metric(f"Tăng giá Hedonic (2019 -> {latest_row['year']})", f"+{latest_row['hedonic_price_index'] - 100:.1f}%")
-gap_val = latest_row['gap_raw_vs_hedonic']
-c3.metric("Mức sai lệch thành phần (Raw - Hedonic)", f"{gap_val:+.2f} điểm")
+c1.metric("Tăng giá thô (2019 -> 2025: Năm đầy đủ)", f"+{full_year_row['raw_price_index'] - 100:.1f}%")
+c2.metric("Tăng giá Hedonic (2019 -> 2025: Năm đầy đủ)", f"+{full_year_row['hedonic_price_index'] - 100:.1f}%")
+c3.metric("Sai lệch thành phần năm 2025 (Thô - Hedonic)", f"{full_year_row['gap_raw_vs_hedonic']:+.2f} điểm")
+
+st.caption(f"📌 **Dữ liệu năm 2026 (Đến hiện tại - 11 tháng):** Chỉ số giá thô đạt {latest_row['raw_price_index']:.2f} (+{latest_row['raw_price_index'] - 100:.2f}%), chỉ số Hedonic đạt {latest_row['hedonic_price_index']:.2f} (+{latest_row['hedonic_price_index'] - 100:.2f}%). Độ lệch: {latest_row['gap_raw_vs_hedonic']:+.2f} điểm.")
 
 st.subheader("Bảng chi tiết theo năm")
 st.dataframe(
@@ -116,7 +117,7 @@ st.write("---")
 st.info("""
 **🎯 Quyết định hỗ trợ:**  
 - Cho phép người theo dõi thị trường phân biệt rõ giữa mức tăng giá danh nghĩa thô và mức tăng giá thuần sau khi đã chuẩn hóa cơ cấu căn hộ.  
-- Giúp tránh việc ngộ nhận thị trường tăng quá nóng hoặc chậm lại chỉ vì có nhiều căn hộ mới đạt MOP diện tích lớn bán ra trong một năm nhất định.
+- Giúp tránh việc ngộ nhận thị trường tăng quá nóng hoặc chậm lại chỉ vì cơ cấu căn hộ giao dịch (diện tích, khoảng tầng, vị trí) thay đổi giữa các năm.
 """)
 
 st.warning("""

@@ -62,7 +62,7 @@
   - Viết bộ dbt schema tests (`dbt_hdb/models/schema.yml`): kiểm tra uniqueness, not null, constraints.
   - Thực thi `dbt build` và `dbt test`:
     - 16/16 models hoàn thành thành công (11 tables, 5 views trong 13.16s).
-    - 16/16 tests PASS 100% (transaction_sk duy nhất tuyệt đối, không có null trên các trường bắt buộc).
+    - 16/16 tests PASS 100% (transaction_sk duy nhất, không có null trên các trường bắt buộc).
     - Thống kê dòng trùng: 318 dòng (0.13%) có `occurrence_no > 1` được giữ nguyên theo đúng quy định mục 7.2.
 - **Lệnh đã chạy:**
   - `python pipeline/load_raw.py`
@@ -115,9 +115,9 @@
 ## Giai đoạn 4: Phân tích Kinh tế lượng
 - **Thời gian:** 04/11/2026 16:13 UTC+7
 - **Việc đã làm:**
-  - Khởi tạo quy tắc phân tích `config/analysis_rules.yml` và khóa mã băm SHA-256: `08c16165026179f384f6ad92302a3c043ba60d6f4fdef7e030fb5d4d52a85ac7`. Tuyệt đối không nới lỏng ngưỡng hay chọn lại mẫu theo quy định mục 8 và 10.
+  - Khởi tạo quy tắc phân tích `config/analysis_rules.yml` và khóa mã băm SHA-256: `08c16165026179f384f6ad92302a3c043ba60d6f4fdef7e030fb5d4d52a85ac7`. Không nới lỏng ngưỡng hay chọn lại mẫu theo quy định mục 8 và 10.
   - Viết `analysis/lease_curve.py` (Q1): mô hình hồi quy hedonic đường cong thời hạn thuê theo nhóm 5 năm (tham chiếu 70-74 năm), kiểm soát diện tích, tầng, khu, tháng, loại căn, sai số gom cụm theo `block_id`.
-    - Kết quả Q1: Số mẫu đạt (P1 min 5,879; P2 min 2,591 tx/nhóm), Spearman thứ hạng đạt 1.0 (tăng đơn điệu hoàn hảo). Tuy nhiên, sai khác tuyệt đối giữa hai thời kỳ tại nhóm 80-84 năm là 8.28% (vượt ngưỡng khóa 5%). Trạng thái: **FAIL** (báo cáo trung thực sự bất ổn định tại phân khúc 80-84 năm sau đại dịch, không bóp méo số liệu).
+    - Kết quả Q1: Số mẫu đạt (P1 min 5,879; P2 min 2,591 tx/nhóm), Spearman thứ hạng đạt 1.0 (tăng đơn điệu). Tuy nhiên, độ chênh lệch giữa hai thời kỳ tại nhóm 80-84 năm là 8.28% (vượt ngưỡng khóa 5%). Trạng thái: **FAIL** (báo cáo trung thực sự bất ổn định tại phân khúc 80-84 năm sau năm 2022, không bóp méo số liệu).
   - Viết `analysis/town_lease_gap.py` (Q2): đo lường mức chênh giữa nhóm thuê ngắn (55-65 năm) và nhóm tham chiếu (70-80 năm) theo khu vực, kiểm soát diện tích, tầng, loại căn, tháng.
     - Kết quả Q2: 13 khu vực đủ điều kiện (>= 200 tx/nhóm cả 2 thời kỳ, vượt ngưỡng >= 10 khu), Spearman thứ hạng đạt 0.6209 (vượt ngưỡng >= 0.60). Trạng thái: **PASS**.
   - Viết `analysis/price_index.py` (Q3): tính chỉ số giá thô so với chỉ số giá hedonic kiểm soát thành phần căn hộ qua các năm (năm gốc 2019 = 100), tính khoảng tin cậy 95% gom cụm block cho tổng thể và 3 loại căn (3-Room, 4-Room, 5-Room).
@@ -142,7 +142,7 @@
     2. `app/pages/1_Duong_cong_thue.py`: Trình diễn đường cong thời hạn thuê theo nhóm 5 năm (kết quả Q1), đối chiếu giữa hai thời kỳ P1 (2017-2022) và P2 (2023-2026), hiển thị bảng số liệu chi tiết, phân tích nguyên nhân kết quả FAIL và các giới hạn kinh tế lượng.
     3. `app/pages/2_So_sanh_khu.py`: Trình diễn mức chênh lệch giá giữa căn hộ thuê ngắn (55-65 năm) và căn hộ chuẩn (70-80 năm) theo từng khu vực (kết quả Q2), phân loại Mature vs Non-Mature town, biểu đồ cột chênh lệch và ma trận tương quan thứ hạng (Spearman = 0.6209 - PASS).
     4. `app/pages/3_Gia_dieu_chinh.py`: So sánh trực quan chuỗi chỉ số giá thô và chỉ số giá Hedonic chuẩn hóa (kết quả Q3, gốc 2019 = 100) kèm dải tin cậy 95% gom cụm theo block, phân rã theo 3 loại căn chính (3-Room, 4-Room, 5-Room).
-    5. `app/pages/4_Cong_cu_tim_khu.py`: Công cụ hỗ trợ người mua tra cứu khu vực theo ngân sách và dải thời hạn thuê mong muốn dựa trên bảng `mart_budget_search` (dữ liệu 12 tháng gần nhất). Bắt buộc hiển thị cảnh báo: *"Công cụ chỉ hỗ trợ thu hẹp phạm vi tìm kiếm theo tiêu chí ngân sách và nhu cầu thời hạn; không cấu thành khuyến nghị đầu tư hoặc xếp hạng khu đáng mua."* Tuyệt đối không có tính năng xếp hạng hoặc gán nhãn "đáng mua nhất".
+    5. `app/pages/4_Cong_cu_tim_khu.py`: Công cụ hỗ trợ người mua tra cứu khu vực theo ngân sách và dải thời hạn thuê mong muốn dựa trên bảng `mart_budget_search` (dữ liệu 12 tháng gần nhất). Bắt buộc hiển thị cảnh báo: *"Công cụ chỉ hỗ trợ thu hẹp phạm vi tìm kiếm theo tiêu chí ngân sách và nhu cầu thời hạn; không cấu thành khuyến nghị đầu tư hoặc xếp hạng khu đáng mua."* Không có tính năng xếp hạng hoặc gán nhãn "đáng mua nhất".
     6. `app/pages/5_Van_hanh.py`: Trang giám sát sức khỏe dữ liệu và quy trình ELT dành cho kỹ sư vận hành, hiển thị lịch sử chạy pipeline, chi tiết kết quả 12 quy tắc của Quality Gate mới nhất, độ tươi dữ liệu nguồn và trạng thái phân tích.
   - Chạy thử dashboard thực tế trên cổng 8501 (`http://localhost:8501`), kiểm tra tất cả bộ lọc dữ liệu.
   - Sử dụng headless Chrome tự động hóa qua `scripts/capture_screenshots.py` để chụp ảnh màn hình chất lượng cao của cả 6 trang, lưu trữ tại thư mục `docs/screenshots/`:

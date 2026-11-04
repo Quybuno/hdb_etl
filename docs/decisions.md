@@ -41,13 +41,13 @@ File này ghi nhận các quyết định kiến trúc, lựa chọn kỹ thuậ
 - **Ngày:** 04/11/2026
 - **Bối cảnh:** Quy tắc khóa cứng tại `config/analysis_rules.yml` có SHA-256 xác thực. Ở câu hỏi nghiên cứu Q1 (Đường cong thời hạn thuê theo nhóm 5 năm), sai khác giữa hai thời kỳ P1 (2017-2022) và P2 (2023-2026) ở nhóm 80-84 năm đạt 8.28%, vượt ngưỡng khóa 5.0%.
 - **Quyết định:** Giữ nguyên 100% ngưỡng khóa, đánh dấu Q1 là FAIL, không nới lỏng ngưỡng thành 10% hay lọc bỏ nhóm để "ép" đạt chỉ tiêu.
-- **Lý do:** Tuân thủ quy tắc bắt buộc số 2 ("Chỉ dùng dữ liệu thật"), số 8 ("Không tự sửa ngưỡng đã khóa") và số 11 ("Không kết luận nhân quả"). Phản ánh trung thực biến động cung cầu của thị trường HDB sau dịch (làn sóng căn hộ mới đạt MOP diện tích lớn tăng mạnh ở nhóm 80-84 năm).
+- **Lý do:** Tuân thủ quy tắc bắt buộc số 2 ("Chỉ dùng dữ liệu thật"), số 8 ("Không tự sửa ngưỡng đã khóa") và số 11 ("Không kết luận nhân quả"). Phản ánh trung thực biến động đo lường được của thị trường HDB sau năm 2022 ở nhóm 80-84 năm.
 
 ## Quyết định 007: Kiến trúc Dashboard Streamlit và Tuân thủ Pháp lý/Khuyến nghị
 - **Ngày:** 04/11/2026
 - **Bối cảnh:** Cần xây dựng dashboard trực quan cho người dùng cuối nhưng phải tuân thủ nghiêm ngặt các quy định về cảnh báo rủi ro đầu tư và vận hành.
 - **Quyết định:**
   - Dashboard kết nối trực tiếp đến `data/warehouse/warehouse.duckdb` ở chế độ read-only (`duckdb.connect(..., read_only=True)`).
-  - Tất cả số liệu hiển thị được tính toán trực tiếp từ các bảng fact/marts/analytics trong database, tuyệt đối không hardcode số liệu tĩnh vào code.
-  - Tại trang tra cứu khu vực (`4_Cong_cu_tim_khu.py`), bắt buộc hiển thị thông điệp cảnh báo nổi bật: *"Công cụ chỉ hỗ trợ thu hẹp phạm vi tìm kiếm theo tiêu chí ngân sách và nhu cầu thời hạn; không cấu thành khuyến nghị đầu tư hoặc xếp hạng khu đáng mua."* Tuyệt đối không tạo tính năng xếp hạng "khu đáng mua nhất" hay "điểm đầu tư".
+  - Tất cả số liệu hiển thị được tính toán trực tiếp từ các bảng fact/marts/analytics trong database, không hardcode số liệu tĩnh vào code.
+  - Tại trang tra cứu khu vực (`4_Cong_cu_tim_khu.py`), bắt buộc hiển thị thông điệp cảnh báo nổi bật: *"Công cụ chỉ hỗ trợ thu hẹp phạm vi tìm kiếm theo tiêu chí ngân sách và nhu cầu thời hạn; không cấu thành khuyến nghị đầu tư hoặc xếp hạng khu đáng mua."* Không tạo tính năng xếp hạng "khu đáng mua nhất" hay "điểm đầu tư".
   - Dashboard không tự nhận là "realtime", ghi rõ chu kỳ cập nhật dữ liệu theo snapshot HDB hàng tháng.

@@ -97,6 +97,13 @@ st.dataframe(
     use_container_width=True
 )
 
+st.error("""
+**Kết luận kiểm định Q1:** **FAIL**  
+- Mẫu giao dịch đạt chuẩn (P1 min = 5,879; P2 min = 2,591 giao dịch/nhóm; ngưỡng >= 1,000).  
+- Thứ hạng Spearman đạt 1.0000 (tăng đơn điệu theo thời hạn thuê).  
+- **Tiêu chí không đạt:** Độ chênh lệch giữa hai thời kỳ ở nhóm 80–84 năm đo được là **0.0828 log points** (tương đương **9.39 điểm phần trăm**), vượt ngưỡng khóa quy định là 0.05 (5 điểm phần trăm). Đường cong chiết khấu thời hạn thuê không giữ được tính ổn định qua thời gian. Không đưa ra giả định nguyên nhân khi không có dữ liệu chứng minh.
+""")
+
 st.write("---")
 
 st.info("""
@@ -107,7 +114,7 @@ st.info("""
 
 st.warning("""
 **⚠️ Giới hạn bắt buộc:**  
-- **Nhóm 90+ năm:** Chênh lệch giá cao (+20% đến +30%) phản ánh sự kết hợp giữa thời hạn thuê dài và hiệu ứng căn hộ hiện đại vừa hoàn thành thời hạn MOP 5 năm (tiện ích và thiết kế mới).  
+- **Nhóm 90+ năm:** Căn hộ còn trên 90 năm thuê được phân tích và báo cáo riêng trong bảng số liệu do có thể bị ảnh hưởng đồng thời bởi các yếu tố mới xây.  
 - **Tương quan không phải nhân quả:** Đường cong phản ánh mức giá giao dịch thực tế trên thị trường, không hàm ý giá giảm thuần túy do hiệu ứng thời gian cơ học.
 """)
 

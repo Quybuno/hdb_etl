@@ -58,7 +58,15 @@ def run_q2_town_lease_gap(db_path: str) -> Dict[str, Any]:
     gaps_p1 = {}
     gaps_p2 = {}
 
+    HDB_MATURE_TOWNS = {
+        'ANG MO KIO', 'BEDOK', 'BISHAN', 'BUKIT MERAH', 'BUKIT TIMAH',
+        'CENTRAL AREA', 'CLEMENTI', 'GEYLANG', 'KALLANG/WHAMPOA',
+        'MARINE PARADE', 'PASIR RIS', 'QUEENSTOWN', 'SERANGOON',
+        'TAMPINES', 'TOA PAYOH'
+    }
+
     for t in qualifying_towns:
+        estate_type = 'Mature' if t in HDB_MATURE_TOWNS else 'Non-Mature'
         for p_name in ["Period 1 (2017-2022)", "Period 2 (2023-Present)"]:
             sub_df = df[(df["town"] == t) & (df["period"] == p_name)].copy()
 
@@ -92,6 +100,7 @@ def run_q2_town_lease_gap(db_path: str) -> Dict[str, Any]:
 
             results_rows.append({
                 "town": t,
+                "estate_type": estate_type,
                 "period": p_name,
                 "short_lease_count": short_n,
                 "ref_lease_count": ref_n,
@@ -109,12 +118,26 @@ def run_q2_town_lease_gap(db_path: str) -> Dict[str, Any]:
     has_min_towns = len(qualifying_towns) >= 10
     spearman_corr = 0.0
     spearman_ok = False
+    leave_one_out_results = []
 
     if has_min_towns:
         p1_series = [gaps_p1[t] for t in qualifying_towns]
         p2_series = [gaps_p2[t] for t in qualifying_towns]
         spearman_corr, _ = spearmanr(p1_series, p2_series)
         spearman_ok = (spearman_corr >= 0.60)
+
+        # Leave-one-out sensitivity analysis (report only, does not alter locked outcome)
+        for t in qualifying_towns:
+            sub_towns = [x for x in qualifying_towns if x != t]
+            s_p1 = [gaps_p1[x] for x in sub_towns]
+            s_p2 = [gaps_p2[x] for x in sub_towns]
+            rho, p = spearmanr(s_p1, s_p2)
+            leave_one_out_results.append({
+                "omitted_town": t,
+                "estate_type": 'Mature' if t in HDB_MATURE_TOWNS else 'Non-Mature',
+                "spearman_rho": round(float(rho), 4),
+                "p_value": round(float(p), 4)
+            })
 
     overall_passed = bool(has_min_towns and spearman_ok)
 
@@ -134,6 +157,7 @@ def run_q2_town_lease_gap(db_path: str) -> Dict[str, Any]:
                 "threshold": ">= 0.60"
             }
         },
+        "leave_one_out": leave_one_out_results,
         "dataframe": pd.DataFrame(results_rows)
     }
 

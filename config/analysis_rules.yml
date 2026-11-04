@@ -41,4 +41,3 @@ analysis_rules:
       full_years_covered: true
       min_flat_types_analyzed: 3
       confidence_intervals_reported: true
-

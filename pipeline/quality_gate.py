@@ -215,7 +215,7 @@ def run_quality_gate(
         if not storey_ok:
             blocking_failed = True
 
-        # Check 9: transaction_sk duy nhất tuyệt đối
+        # Check 9: transaction_sk duy nhất (100% unique)
         distinct_sk = con.execute("SELECT count(distinct transaction_sk) FROM main_marts.fct_resale_transaction").fetchone()[0]
         sk_unique = (distinct_sk == fact_count)
         checks.append({

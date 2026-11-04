@@ -1,9 +1,17 @@
 import os
 import csv
+import hashlib
 import duckdb
 import pytest
 from pipeline.quality_gate import run_quality_gate
 from pipeline.publish import publish_warehouse
+
+def get_file_sha256(file_path: str) -> str:
+    h = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        while chunk := f.read(65536):
+            h.update(chunk)
+    return h.hexdigest()
 
 def setup_dummy_duckdb(db_path, row_count=1000):
     con = duckdb.connect(db_path)
@@ -62,11 +70,13 @@ def test_quality_gate_failure_on_missing_column(tmp_path):
     res = run_quality_gate(staging_db, raw_csv_path=bad_csv, prod_db_path=prod_db)
     assert res["passed"] is False, "Quality Gate should have failed due to missing columns"
 
-    # Verify publish is blocked and prod_db is not overwritten
+    # Verify publish is blocked and prod_db is not overwritten (both mtime and SHA-256 hash)
     initial_prod_mtime = os.path.getmtime(prod_db)
+    initial_prod_hash = get_file_sha256(prod_db)
     pub_result = publish_warehouse(staging_db, prod_db, quality_passed=res["passed"])
     assert pub_result is False
     assert os.path.getmtime(prod_db) == initial_prod_mtime
+    assert get_file_sha256(prod_db) == initial_prod_hash, "prod_db hash must be identical after blocked publish"
 
 def test_quality_gate_failure_on_empty_file(tmp_path):
     # Scenario 2: Empty file
@@ -83,9 +93,11 @@ def test_quality_gate_failure_on_empty_file(tmp_path):
     assert res["passed"] is False, "Quality Gate should have failed due to empty file"
 
     initial_prod_mtime = os.path.getmtime(prod_db)
+    initial_prod_hash = get_file_sha256(prod_db)
     pub_result = publish_warehouse(staging_db, prod_db, quality_passed=res["passed"])
     assert pub_result is False
     assert os.path.getmtime(prod_db) == initial_prod_mtime
+    assert get_file_sha256(prod_db) == initial_prod_hash, "prod_db hash must be identical after blocked publish"
 
 def test_quality_gate_failure_on_row_count_drop(tmp_path):
     # Scenario 3: Significant drop in row count (> 1%)
@@ -98,6 +110,50 @@ def test_quality_gate_failure_on_row_count_drop(tmp_path):
     assert res["passed"] is False, "Quality Gate should have failed due to row count drop > 1%"
 
     initial_prod_mtime = os.path.getmtime(prod_db)
+    initial_prod_hash = get_file_sha256(prod_db)
     pub_result = publish_warehouse(staging_db, prod_db, quality_passed=res["passed"])
     assert pub_result is False
     assert os.path.getmtime(prod_db) == initial_prod_mtime
+    assert get_file_sha256(prod_db) == initial_prod_hash, "prod_db hash must be identical after blocked publish"
+
+def test_quality_gate_failure_preserves_file_hash(tmp_path):
+    # Dedicated verification: SHA-256 hash before and after failed publish must match
+    staging_db = str(tmp_path / "staging.duckdb")
+    prod_db = str(tmp_path / "prod.duckdb")
+    setup_dummy_duckdb(staging_db, row_count=100)
+    setup_dummy_duckdb(prod_db, row_count=100)
+
+    hash_before = get_file_sha256(prod_db)
+    # Attempt publish with quality_passed=False
+    success = publish_warehouse(staging_db, prod_db, quality_passed=False)
+    assert success is False
+    hash_after = get_file_sha256(prod_db)
+
+    assert hash_before == hash_after, f"Hash changed! Before: {hash_before}, After: {hash_after}"
+
+def test_publish_behavior_when_read_connection_open_on_windows(tmp_path):
+    # Test behavior when a process has an open read handle on Windows
+    staging_db = str(tmp_path / "staging.duckdb")
+    prod_db = str(tmp_path / "prod.duckdb")
+    setup_dummy_duckdb(staging_db, row_count=200)
+    setup_dummy_duckdb(prod_db, row_count=100)
+
+    hash_before = get_file_sha256(prod_db)
+
+    # Simulate an active reader holding a file handle
+    con_reader = duckdb.connect(prod_db, read_only=True)
+    try:
+        # On Windows, os.replace raises PermissionError because the file handle is locked
+        with pytest.raises(PermissionError):
+            publish_warehouse(staging_db, prod_db, quality_passed=True)
+
+        # Confirm prod_db was not corrupted or modified
+        assert get_file_sha256(prod_db) == hash_before
+    finally:
+        # Once the read connection is closed/released, publish succeeds cleanly
+        con_reader.close()
+
+    success = publish_warehouse(staging_db, prod_db, quality_passed=True)
+    assert success is True
+    # The new database hash should now reflect the updated staging database
+    assert get_file_sha256(prod_db) != hash_before

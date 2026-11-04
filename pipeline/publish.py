@@ -40,6 +40,18 @@ def publish_warehouse(
         os.replace(tmp_publish_path, prod_db_path)
         logger.info(f"Successfully published production warehouse to '{prod_db_path}'")
         return True
+    except PermissionError as pe:
+        logger.error(f"Atomic publish failed due to file lock (PermissionError): {pe}")
+        logger.error(
+            "LƯU Ý VẬN HÀNH TRÊN WINDOWS: Cần dừng hoặc giải phóng các kết nối đọc (read connections) "
+            f"đang mở tới '{prod_db_path}' (ví dụ: phiên truy vấn Streamlit/DuckDB) trước khi thực hiện publish."
+        )
+        if os.path.exists(tmp_publish_path):
+            try:
+                os.remove(tmp_publish_path)
+            except Exception:
+                pass
+        raise pe
     except Exception as e:
         logger.error(f"Atomic publish failed: {e}")
         if os.path.exists(tmp_publish_path):
