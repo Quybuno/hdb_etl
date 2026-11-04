@@ -109,3 +109,24 @@
 - **Kết quả:** ĐẠT 100%. Đã xuất bản phiên bản cơ sở dữ liệu sản xuất đầu tiên tại `data/warehouse/warehouse.duckdb`.
 - **Trạng thái:** ĐẠT. Đủ điều kiện chuyển sang Giai đoạn 4.
 - **Việc tiếp theo:** Giai đoạn 4: Phân tích kinh tế lượng (Q1, Q2, Q3) theo quy tắc khóa cứng `config/analysis_rules.yml`.
+
+---
+
+## Giai đoạn 4: Phân tích Kinh tế lượng
+- **Thời gian:** 04/11/2026 16:13 UTC+7
+- **Việc đã làm:**
+  - Khởi tạo quy tắc phân tích `config/analysis_rules.yml` và khóa mã băm SHA-256: `08c16165026179f384f6ad92302a3c043ba60d6f4fdef7e030fb5d4d52a85ac7`. Tuyệt đối không nới lỏng ngưỡng hay chọn lại mẫu theo quy định mục 8 và 10.
+  - Viết `analysis/lease_curve.py` (Q1): mô hình hồi quy hedonic đường cong thời hạn thuê theo nhóm 5 năm (tham chiếu 70-74 năm), kiểm soát diện tích, tầng, khu, tháng, loại căn, sai số gom cụm theo `block_id`.
+    - Kết quả Q1: Số mẫu đạt (P1 min 5,879; P2 min 2,591 tx/nhóm), Spearman thứ hạng đạt 1.0 (tăng đơn điệu hoàn hảo). Tuy nhiên, sai khác tuyệt đối giữa hai thời kỳ tại nhóm 80-84 năm là 8.28% (vượt ngưỡng khóa 5%). Trạng thái: **FAIL** (báo cáo trung thực sự bất ổn định tại phân khúc 80-84 năm sau đại dịch, không bóp méo số liệu).
+  - Viết `analysis/town_lease_gap.py` (Q2): đo lường mức chênh giữa nhóm thuê ngắn (55-65 năm) và nhóm tham chiếu (70-80 năm) theo khu vực, kiểm soát diện tích, tầng, loại căn, tháng.
+    - Kết quả Q2: 13 khu vực đủ điều kiện (>= 200 tx/nhóm cả 2 thời kỳ, vượt ngưỡng >= 10 khu), Spearman thứ hạng đạt 0.6209 (vượt ngưỡng >= 0.60). Trạng thái: **PASS**.
+  - Viết `analysis/price_index.py` (Q3): tính chỉ số giá thô so với chỉ số giá hedonic kiểm soát thành phần căn hộ qua các năm (năm gốc 2019 = 100), tính khoảng tin cậy 95% gom cụm block cho tổng thể và 3 loại căn (3-Room, 4-Room, 5-Room).
+    - Kết quả Q3: Phủ toàn bộ từ 2017 đến 2026, phân tích đủ 3 phân khúc chính kèm khoảng tin cậy. Trạng thái: **PASS**.
+  - Viết `analysis/run_analysis.py`: nạp kết quả vào DuckDB schema `analytics` (`analytics.lease_curve`, `analytics.town_lease_gap`, `analytics.price_index`, `analytics.analysis_run`) và xuất báo cáo `docs/analysis_results.md`.
+  - Xuất bản dữ liệu phân tích sang `warehouse.duckdb`.
+- **Lệnh đã chạy:**
+  - `python analysis/run_analysis.py`
+  - `python pipeline/publish.py`
+- **Kết quả:** Q1: FAIL (ghi nhận trung thực, đường cong có bước nhảy tại nhóm 80-84 năm sau 2023), Q2: PASS, Q3: PASS. Thỏa mãn điều kiện "Ít nhất một trong Q2 hoặc Q3 đạt" theo mục 15 đặc tả.
+- **Trạng thái:** ĐẠT. Đủ điều kiện chuyển sang Giai đoạn 5.
+- **Việc tiếp theo:** Giai đoạn 5: Xây dựng Streamlit Dashboard hoàn chỉnh theo mục 11 kết nối dữ liệu thật từ `warehouse.duckdb`.

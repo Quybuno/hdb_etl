@@ -1,0 +1,43 @@
+analysis_rules:
+  version: "1.0.0"
+  locked_date: "2026-11-04"
+
+  q1_lease_curve:
+    dependent_var: "log_price"
+    main_var: "lease_band_5yr"
+    reference_band: "70-74"
+    evaluated_bands: ["50-54", "55-59", "60-64", "65-69", "75-79", "80-84", "85-89"]
+    controls: ["floor_area_sqm", "storey_mid", "flat_type", "town", "month"]
+    cluster_var: "block_id"
+    periods:
+      period_1: ["2017-01", "2022-12"]
+      period_2: ["2023-01", "2026-11"]
+    acceptance_criteria:
+      min_transactions_per_band: 1000
+      min_spearman_rank_correlation: 0.90
+      max_absolute_percentage_diff: 0.05
+
+  q2_town_lease_gap:
+    short_lease_range: [55.0, 65.0]
+    ref_lease_range: [70.0, 80.0]
+    min_transactions_per_group_per_town: 200
+    controls: ["floor_area_sqm", "storey_mid", "flat_type", "month"]
+    cluster_var: "block_id"
+    periods:
+      period_1: ["2017-01", "2022-12"]
+      period_2: ["2023-01", "2026-11"]
+    acceptance_criteria:
+      min_qualifying_towns: 10
+      min_spearman_rank_correlation: 0.60
+
+  q3_price_index:
+    base_year: 2019
+    full_years_range: [2017, 2025]
+    latest_evaluated_year: 2026
+    required_flat_types: ["3 ROOM", "4 ROOM", "5 ROOM"]
+    controls: ["floor_area_sqm", "storey_mid", "remaining_lease_years", "town", "flat_type"]
+    cluster_var: "block_id"
+    acceptance_criteria:
+      full_years_covered: true
+      min_flat_types_analyzed: 3
+      confidence_intervals_reported: true
