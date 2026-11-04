@@ -1,0 +1,7 @@
+dbt_hdb:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "../data/warehouse/warehouse_staging.duckdb"
+      threads: 4

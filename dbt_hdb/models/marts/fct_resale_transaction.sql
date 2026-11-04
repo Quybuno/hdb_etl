@@ -1,0 +1,32 @@
+{{ config(materialized='table') }}
+
+select
+    transaction_sk,
+    business_hash,
+    occurrence_no,
+    month,
+    transaction_year,
+    transaction_month_num,
+    town,
+    flat_type,
+    block,
+    street_name,
+    storey_range,
+    storey_mid,
+    floor_area_sqm,
+    flat_model,
+    lease_commence_year,
+    remaining_lease_years,
+    lease_band_5yr,
+    flat_age,
+    resale_price,
+    price_per_sqm,
+    block_latitude,
+    block_longitude,
+    nearest_mrt_station,
+    nearest_mrt_exit,
+    mrt_distance_m,
+    mrt_band,
+    cbd_distance_km,
+    source_row_number
+from {{ ref('int_resale_enriched') }}

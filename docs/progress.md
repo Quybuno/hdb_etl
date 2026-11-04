@@ -43,3 +43,31 @@
 - **Kết quả:** ĐẠT. Toàn bộ dữ liệu raw và reference đã sẵn sàng.
 - **Trạng thái:** ĐẠT. Đủ điều kiện chuyển sang Giai đoạn 2.
 - **Việc tiếp theo:** Giai đoạn 2: Load dữ liệu thô vào DuckDB và xây dựng các mô hình dbt (staging, intermediate, marts, ops).
+
+---
+
+## Giai đoạn 2: Load và dbt Transformation
+- **Thời gian:** 04/11/2026 16:07 UTC+7
+- **Việc đã làm:**
+  - Viết `pipeline/load_raw.py`: nạp dữ liệu thô vào `warehouse_staging.duckdb`:
+    - `raw.hdb_resale_snapshot`: 244,119 dòng dạng chuỗi thô kèm `source_row_number`, `run_id`, `loaded_at_utc`.
+    - `raw.mrt_station_exits`: 613 ga/cửa MRT.
+    - `raw.block_coordinates`: 9,769 block tòa nhà.
+  - Thiết lập dự án dbt `dbt_hdb` với profile kết nối DuckDB.
+  - Viết toàn bộ các mô hình SQL theo mục 7 đặc tả:
+    - **Staging:** `stg_hdb_resale` (tính `business_hash`, `occurrence_no`, `transaction_sk`), `stg_mrt_exits`, `stg_block_location`.
+    - **Intermediate:** `int_resale_parsed` (parse `remaining_lease_years`, `storey_mid`, `price_per_sqm`, `flat_age`, `lease_band_5yr`), `int_block_mrt_distance` (tính cự ly Haversine tới 613 cửa MRT và CBD Raffles Place), `int_resale_enriched` (ghép nối giao dịch với không gian địa lý).
+    - **Marts:** `dim_month`, `dim_town` (phân loại Mature/Non-Mature), `dim_block`, `dim_flat_type`, `fct_resale_transaction`, `mart_town_month`, `mart_budget_search`.
+    - **Ops:** `ops_pipeline_run`, `ops_snapshot_delta`, `ops_source_freshness`.
+  - Viết bộ dbt schema tests (`dbt_hdb/models/schema.yml`): kiểm tra uniqueness, not null, constraints.
+  - Thực thi `dbt build` và `dbt test`:
+    - 16/16 models hoàn thành thành công (11 tables, 5 views trong 13.16s).
+    - 16/16 tests PASS 100% (transaction_sk duy nhất tuyệt đối, không có null trên các trường bắt buộc).
+    - Thống kê dòng trùng: 318 dòng (0.13%) có `occurrence_no > 1` được giữ nguyên theo đúng quy định mục 7.2.
+- **Lệnh đã chạy:**
+  - `python pipeline/load_raw.py`
+  - `dbt build --profiles-dir .`
+  - `dbt test --profiles-dir .`
+- **Kết quả:** ĐẠT 100%. Toàn bộ dữ liệu fact, dim, marts, ops đã sẵn sàng trong `warehouse_staging.duckdb`.
+- **Trạng thái:** ĐẠT. Đủ điều kiện chuyển sang Giai đoạn 3.
+- **Việc tiếp theo:** Giai đoạn 3: Quality Gate, Publish nguyên tử và kiểm thử hồi quy pytest (ít nhất 3 tình huống lỗi: thiếu cột, file trống, số dòng giảm).

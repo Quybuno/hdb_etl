@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: fct_resale_transaction
+    description: "Bảng fact giao dịch bán lại HDB chi tiết"
+    columns:
+      - name: transaction_sk
+        description: "Khóa đại diện giao dịch duy nhất sha256(business_hash || occurrence_no)"
+        tests:
+          - unique
+          - not_null
+      - name: month
+        tests:
+          - not_null
+      - name: town
+        tests:
+          - not_null
+      - name: flat_type
+        tests:
+          - not_null
+      - name: block
+        tests:
+          - not_null
+      - name: street_name
+        tests:
+          - not_null
+      - name: resale_price
+        tests:
+          - not_null
+      - name: floor_area_sqm
+        tests:
+          - not_null
+      - name: remaining_lease_years
+        tests:
+          - not_null
+
+  - name: dim_month
+    description: "Dimension tháng giao dịch"
+    columns:
+      - name: month
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_town
+    description: "Dimension khu vực"
+    columns:
+      - name: town
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_flat_type
+    description: "Dimension loại căn hộ"
+    columns:
+      - name: flat_type
+        tests:
+          - unique
+          - not_null
