@@ -71,3 +71,41 @@
 - **Kết quả:** ĐẠT 100%. Toàn bộ dữ liệu fact, dim, marts, ops đã sẵn sàng trong `warehouse_staging.duckdb`.
 - **Trạng thái:** ĐẠT. Đủ điều kiện chuyển sang Giai đoạn 3.
 - **Việc tiếp theo:** Giai đoạn 3: Quality Gate, Publish nguyên tử và kiểm thử hồi quy pytest (ít nhất 3 tình huống lỗi: thiếu cột, file trống, số dòng giảm).
+
+---
+
+## Giai đoạn 3: Quality Gate và Publish
+- **Thời gian:** 04/11/2026 16:10 UTC+7
+- **Việc đã làm:**
+  - Viết `pipeline/quality_gate.py` triển khai đầy đủ 12 điều kiện chặn (Blocking checks) và các điều kiện cảnh báo (Warning checks) theo mục 9 đặc tả:
+    1. Số cột HDB: đúng 11 cột dự kiến.
+    2. File raw: không trống (> 0 bytes, có dữ liệu).
+    3. Số dòng: không giảm quá 1% so với snapshot xuất bản trước đó.
+    4. Tỷ lệ null các trường cốt lõi (`month`, `town`, `flat_type`, `block`, `street_name`, `resale_price`) <= 0.1%.
+    5. `resale_price` > 0.
+    6. `floor_area_sqm` > 0.
+    7. Tỷ lệ lỗi parse `remaining_lease` <= 0.1%.
+    8. Tỷ lệ lỗi parse `storey_range` <= 0.1%.
+    9. `transaction_sk` duy nhất 100%.
+    10. Lệch 0 dòng giữa bảng raw snapshot và bảng fact.
+    11. Tỷ lệ ghép nối tọa độ block >= 98% (thực tế đạt 100%).
+    12. Độ mới dữ liệu: `max(month)` không cũ quá 2 tháng dương lịch.
+    - Cảnh báo: tỷ lệ dòng trùng theo `business_hash` (ghi nhận 0.13%).
+    - Ghi nhận chi tiết kết quả vào bảng `ops.quality_result`.
+  - Viết `pipeline/publish.py`: cơ chế xuất bản nguyên tử (atomic rename qua `.tmp`) từ `warehouse_staging.duckdb` sang `warehouse.duckdb`; từ chối xuất bản và giữ nguyên warehouse cũ nếu Quality Gate không đạt.
+  - Viết bộ kiểm thử tự động pytest:
+    - `tests/test_parsers.py`: kiểm tra hàm phân tích lease, storey và tính duy nhất của hash/sk.
+    - `tests/test_manifest.py`: kiểm tra cấu trúc schema và đọc ghi manifest.
+    - `tests/test_quality_gate.py`: chứng minh lỗi bị chặn và `warehouse.duckdb` không bị ghi đè trong 3 tình huống:
+      1. Thiếu cột trong file raw.
+      2. File raw trống.
+      3. Số dòng giảm quá 1% so với baseline.
+    - `tests/test_fact_raw_reconciliation.py`: chọn ngẫu nhiên 20 dòng từ `fct_resale_transaction` và đối chiếu ngược về file raw CSV theo `source_row_number` và 11 thuộc tính gốc.
+  - Chạy `pytest -v`: 8/8 tests PASS 100% trong 2.87s.
+- **Lệnh đã chạy:**
+  - `python pipeline/quality_gate.py`
+  - `pytest -v`
+  - `python pipeline/publish.py`
+- **Kết quả:** ĐẠT 100%. Đã xuất bản phiên bản cơ sở dữ liệu sản xuất đầu tiên tại `data/warehouse/warehouse.duckdb`.
+- **Trạng thái:** ĐẠT. Đủ điều kiện chuyển sang Giai đoạn 4.
+- **Việc tiếp theo:** Giai đoạn 4: Phân tích kinh tế lượng (Q1, Q2, Q3) theo quy tắc khóa cứng `config/analysis_rules.yml`.
