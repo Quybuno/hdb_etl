@@ -9,78 +9,76 @@
 
 ## 1. Mở đầu bằng Ví dụ Thực tế từ Thị trường
 
-Trong thị trường nhà ở công cộng Singapore (HDB), người mua nhà không sở hữu đất vĩnh viễn mà nắm giữ hợp đồng thuê 99 năm do HDB cấp. Khi hợp đồng thuê trôi dần về cuối, giá trị giao dịch của căn hộ chịu tác động trực tiếp của quy luật khấu hao thời hạn.
+Trong thị trường nhà ở công cộng Singapore (HDB), người mua nhà nắm giữ hợp đồng thuê 99 năm do cơ quan nhà ở HDB cấp. Khi hợp đồng thuê trôi dần về cuối, giá trị giao dịch của căn hộ phản ánh sự suy giảm thời hạn thuê còn lại.
 
-Dữ liệu giao dịch thực tế đã đăng ký trong tháng **05/2025** tại cùng khu vực hành chính **ANG MO KIO** cho thấy sự chênh lệch rõ rệt giữa hai căn hộ có diện tích và loại phòng tương đương:
+Dữ liệu giao dịch đăng ký chính thức trong kho dữ liệu `fct_resale_transaction` vào tháng **07/2024** tại cùng khu vực hành chính **QUEENSTOWN** ghi nhận hai căn hộ có các đặc tính cơ bản tương đồng nhưng có thời hạn thuê khác biệt lớn:
 
-| Thuộc tính | Căn hộ A (Thuê ngắn) | Căn hộ B (Thuê dài) |
+| Thuộc tính | Căn hộ 1 (Thuê ngắn) | Căn hộ 2 (Thuê dài) |
 |---|---|---|
-| **Tháng giao dịch** | 2025-05 | 2025-05 |
-| **Khu vực (Town)** | ANG MO KIO | ANG MO KIO |
-| **Vị trí Block** | Block 214, Ang Mo Kio Ave 3 | Block 700C, Ang Mo Kio Ave 6 |
-| **Loại căn hộ** | 4 ROOM | 4 ROOM |
-| **Diện tích sàn** | 82.0 m² | 85.0 m² |
-| **Khoảng tầng** | 04 TO 06 | 10 TO 12 |
-| **Năm bắt đầu thuê** | 1978 | 2005 |
-| **Thời hạn thuê còn lại** | **49 năm 9 tháng (49.75 năm)** | **77 năm 2 tháng (77.17 năm)** |
-| **Giá bán lại (Resale Price)** | **530,000 SGD** | **798,000 SGD** |
-| **Đơn giá trên m²** | **6,463.41 SGD/m²** | **9,388.24 SGD/m²** |
-| **Mức chênh lệch đơn giá** | *Cơ sở tham chiếu* | **+45.25% (+2,924.83 SGD/m²)** |
+| **transaction_sk** | `6422b1795eabe983b98ee59eb120fa2b10dc0c446852ce9d5b9091f6f0255df5` | `bff535e26da9e95120bd78044e33f306d39c7da1902da444ce0cafa0fd701d83` |
+| **Tháng giao dịch** | 2024-07 | 2024-07 |
+| **Khu vực (Town)** | QUEENSTOWN | QUEENSTOWN |
+| **Vị trí Block** | Block 95, C'WEALTH DR | Block 89, TANGLIN HALT RD |
+| **Loại căn hộ** | 3 ROOM | 3 ROOM |
+| **Khoảng tầng** | 04 TO 06 | 04 TO 06 |
+| **Diện tích sàn** | 60.0 m² | 60.0 m² |
+| **Thời hạn thuê còn lại** | **41 năm 7 tháng (41.58 năm)** | **83 năm 2 tháng (83.17 năm)** |
+| **Giá bán lại (Resale Price)** | **322,000 SGD** | **592,000 SGD** |
+| **Đơn giá trên mỗi m²** | **5,366.67 SGD/m²** | **9,866.67 SGD/m²** |
+| **Mức chênh lệch đơn giá** | *Cơ sở đối chiếu* | **+83.85% (+4,500.00 SGD/m²)** |
 
-Mặc dù có cùng công năng 4 phòng và giao dịch trong cùng một tháng tại cùng một thị trấn, căn hộ còn 77 năm thời hạn thuê có đơn giá trên mỗi mét vuông cao hơn 45.25% so với căn hộ chỉ còn dưới 50 năm thời hạn thuê. Câu hỏi đặt ra là: Sau khi kiểm soát một cách hệ thống các yếu tố cấu thành khác (vị trí khu vực, diện tích, tầng cao, cự ly MRT, cự ly trung tâm và thời điểm giao dịch), đường cong chiết khấu giá trị theo thời hạn thuê thực sự có hình dạng như thế nào và có giữ được tính ổn định qua các chu kỳ thị trường hay không?
+> **Lưu ý phương pháp:** Đây là hai quan sát thực tế được chọn để minh họa sự khác biệt mức giá thô ghi nhận được giữa hai căn hộ có thời hạn thuê chênh lệch 41.58 năm. Đây **không phải là kết quả đã kiểm soát** bằng mô hình kinh tế lượng, bởi hai căn hộ còn khác nhau về vị trí cụ thể, cự ly đến các tiện ích giao thông và hiện trạng sửa chữa nội thất. Câu hỏi nghiên cứu đặt ra là: Sau khi kiểm soát đồng thời diện tích, tầng cao, loại căn hộ, khu vực hành chính và tháng giao dịch, mức chênh lệch giá theo thời hạn thuê còn lại được lượng hóa như thế nào?
 
 ---
 
 ## 2. Vấn đề và Người dùng
 
 ### 2.1. Vấn đề nghiên cứu
-Hơn 80% công dân Singapore sinh sống trong các căn hộ HDB. Phần lớn các khu đô thị xây dựng từ thập niên 1970–1980 (như Toa Payoh, Ang Mo Kio, Bedok, Queenstown) hiện đã bước vào nửa sau của vòng đời 99 năm. Người mua nhà, đặc biệt là nhóm người trẻ và người mua nhà lần đầu, đứng trước sự đánh đổi phức tạp:
-- Chọn căn hộ cũ ở vị trí trung tâm, tiện ích hoàn thiện nhưng thời hạn thuê còn ngắn, đối mặt với rủi ro khấu hao giá trị và hạn chế vay thế chấp theo quy định CPF/HDB khi thời hạn thuê còn dưới 60 năm.
-- Chọn căn hộ mới ở các khu vực rìa đô thị với thời hạn thuê dài nhưng cách xa trung tâm việc làm.
+Nhà ở HDB tại Singapore được xây dựng và cấp quyền sử dụng đất có thời hạn 99 năm. Đối với các khu đô thị được phát triển từ những giai đoạn đầu, thời hạn thuê còn lại của nhiều khối nhà hiện đang rút ngắn dần. Người mua nhà đứng trước sự so sánh giữa các căn hộ có thời hạn thuê ngắn và các căn hộ có thời hạn thuê dài hơn tại các vị trí khác nhau. Việc lượng hóa mức độ chiết khấu giá gắn với số năm thuê còn lại cung cấp thông tin tham chiếu khách quan cho thị trường.
 
 ### 2.2. Nhóm người dùng mục tiêu
-1. **Người mua nhà cá nhân:** Cần công cụ khách quan để ước tính mức chiết khấu giá hợp lý khi mua căn hộ cũ, thu hẹp phạm vi tìm kiếm theo ngân sách thực tế mà không bị dẫn dắt bởi các xếp hạng quảng cáo thiên lệch.
-2. **Chuyên viên phân tích và Định chế tài chính:** Cần theo dõi chuỗi chỉ số giá hedonic đã chuẩn hóa đặc tính căn hộ để đánh giá rủi ro tài sản thế chấp theo vòng đời hợp đồng thuê.
-3. **Cơ quan quản lý và Nhà nghiên cứu chính sách:** Cần dữ liệu đo lường thực nghiệm về sự khác biệt chiết khấu giữa các khu vực trưởng thành (mature) và không trưởng thành (non-mature) nhằm xây dựng các chính sách tái thiết đô thị (như SERS hoặc VERS).
+1. **Người mua nhà cá nhân:** Cần thông tin tham chiếu thực nghiệm về mức chênh lệch giá giữa các dải thời hạn thuê khác nhau để cân nhắc nhu cầu sử dụng thực tế.
+2. **Chuyên viên nghiên cứu thị trường:** Cần chỉ số giá hedonic đã kiểm soát các đặc tính cơ bản của căn hộ qua các năm, tách biệt sự thay đổi giá thuần túy khỏi sự thay đổi về cơ cấu loại căn hộ giao dịch.
+3. **Cơ quan quản lý dữ liệu:** Cần kiểm tra tính nhất quán và độ ổn định của các chỉ số đo lường kinh tế lượng theo chu kỳ thời gian.
 
 ---
 
 ## 3. Câu hỏi Phân tích
 
-Nghiên cứu tập trung giải quyết 4 câu hỏi định lượng cốt lõi theo đặc tả:
+Nghiên cứu tập trung giải quyết 4 câu hỏi định lượng theo đặc tả:
 
-- **Q1 (Đường cong thời hạn thuê):** Khi thời hạn thuê còn lại ngắn đi, giá căn hộ giảm theo đường cong nào sau khi kiểm soát diện tích, tầng cao, loại căn, khu vực và tháng giao dịch? Đường cong này có giữ được tính ổn định giữa hai thời kỳ: 2017–2022 và 2023–hiện tại không?
-- **Q2 (Khác biệt theo khu vực):** Mức chênh lệch giá giữa nhóm căn hộ thuê ngắn (55–65 năm) và nhóm tham chiếu (70–80 năm) có khác nhau giữa các khu vực hành chính hay không? Thứ hạng chiết khấu giữa các khu vực có nhất quán qua thời gian không?
-- **Q3 (Chỉ số giá điều chỉnh - Hedonic vs Raw):** Tốc độ tăng giá thô (median price) khác gì so với tốc độ tăng giá thực tế sau khi đã kiểm soát sự thay đổi thành phần căn hộ qua các năm từ năm gốc 2019?
-- **Q4 (Hỗ trợ người mua):** Với ngân sách, loại căn, thời hạn tối thiểu và cự ly MRT xác định, khu vực nào có giao dịch đăng ký thực tế phù hợp trong 12 tháng gần nhất?
+- **Q1 (Đường cong thời hạn thuê):** Khi thời hạn thuê còn lại ngắn đi, giá căn hộ thay đổi theo hệ số nào sau khi kiểm soát diện tích sàn, tầng cao, loại căn, khu vực hành chính và tháng giao dịch? Hệ số này có ổn định giữa hai thời kỳ 2017–2022 và 2023–hiện tại không?
+- **Q2 (Khác biệt theo khu vực):** Mức chênh lệch giá giữa nhóm căn hộ thời hạn 55–65 năm và nhóm tham chiếu 70–80 năm có khác nhau giữa các khu vực hành chính hay không? Thứ hạng chênh lệch giữa các khu vực có giữ được độ tương quan qua hai thời kỳ không?
+- **Q3 (Chỉ số giá điều chỉnh - Hedonic vs Raw):** Tốc độ thay đổi của giá trung vị thô khác gì so với chỉ số giá hedonic đã kiểm soát thành phần căn hộ qua các năm từ năm gốc 2019?
+- **Q4 (Hỗ trợ người mua):** Với các tiêu chí cụ thể về ngân sách, loại căn, thời hạn thuê tối thiểu và cự ly MRT, các khu vực nào có giao dịch đăng ký thực tế thỏa mãn trong 12 tháng gần nhất?
 
 ---
 
 ## 4. Nguồn Dữ liệu và Giấy phép
 
-Hệ thống tích hợp dữ liệu từ 4 nguồn mở chính thống:
+Hệ thống tích hợp dữ liệu từ 4 nguồn:
 
 1. **HDB Resale Flat Prices (data.gov.sg):**
    - *Dataset ID:* `d_8b84c4ee58e3cfc0ece0d773c8ca6abc`
-   - *Quy mô:* 244,119 dòng giao dịch chính thức từ tháng 01/2017 đến tháng 11/2026.
-   - *11 cột bắt buộc:* `month`, `town`, `flat_type`, `block`, `street_name`, `storey_range`, `floor_area_sqm`, `flat_model`, `lease_commence_date`, `remaining_lease`, `resale_price`.
+   - *Quy mô:* 244,119 dòng giao dịch đăng ký chính thức từ tháng 01/2017 đến tháng 11/2026.
+   - *11 cột dữ liệu:* `month`, `town`, `flat_type`, `block`, `street_name`, `storey_range`, `floor_area_sqm`, `flat_model`, `lease_commence_date`, `remaining_lease`, `resale_price`.
    - *Giấy phép:* Singapore Open Data Licence.
 2. **LTA MRT Station Exits (data.gov.sg):**
    - *Dataset ID:* `d_b39d3a0871985372d7e1637193335da5`
-   - *Quy mô:* 613 cửa ga MRT/LRT trên toàn Singapore kèm tọa độ kinh vĩ độ WGS84.
+   - *Quy mô:* 613 cửa ga MRT/LRT kèm tọa độ WGS84.
    - *Giấy phép:* Singapore Open Data Licence.
 3. **NUS 3D HDB Dataset (ualsg/hdb3d-data):**
-   - *Kho dữ liệu:* Dữ liệu hình học và tọa độ địa lý của các tòa nhà HDB tại Singapore.
-   - *Giấy phép:* Giấy phép mã nguồn mở MIT.
+   - *Kho dữ liệu:* Dữ liệu tọa độ địa lý các khối nhà HDB tại Singapore.
+   - *Giấy phép:* MIT License.
 4. **OneMap Search API (SLA):**
-   - *Dịch vụ:* Nền tảng bản đồ số quốc gia của Cục Quản lý Đất đai Singapore (SLA). Sử dụng tra cứu tọa độ cho các block mới xây dựng ngoài tập dữ liệu NUS 3D.
-   - *Quy tắc gọi:* Rate limit 1 giây/request, có bộ nhớ đệm (cache) để tránh gọi lặp lại.
+   - *Dịch vụ:* Tra cứu tọa độ cho các block mới xây dựng ngoài tập dữ liệu NUS 3D.
+   - *Cơ chế gọi:* Giới hạn tần suất 1 request/giây kèm bộ nhớ đệm cục bộ.
 
 ---
 
 ## 5. Kiến trúc ELT
 
-Hệ thống được thiết kế theo mô hình ELT (Extract - Load - Transform) hiện đại với DuckDB đóng vai trò kho dữ liệu embedded cục bộ và dbt quản lý luồng biến đổi:
+Hệ thống được tổ chức theo quy trình ELT sử dụng DuckDB làm kho dữ liệu cục bộ và dbt quản lý các tầng mô hình:
 
 ```
 [ data.gov.sg API ]  -->  pipeline/extract_hdb.py  -->  data/raw/hdb_resale/.../hdb_resale.csv (Bất biến + Manifest)
@@ -94,7 +92,7 @@ Hệ thống được thiết kế theo mô hình ELT (Extract - Load - Transfor
                  [ warehouse_staging.duckdb ]
                                    │
                                    ▼
-                        dbt_hdb (16 Models)
+                        dbt_hdb (16 Models, 24 Data Tests)
                ├── Staging: stg_hdb_resale, stg_mrt_exits, stg_block_location
                ├── Intermediate: int_resale_parsed, int_block_mrt_distance, int_resale_enriched
                ├── Marts: dim_month, dim_town, dim_block, dim_flat_type, fct_resale_transaction, mart_budget_search...
@@ -107,7 +105,7 @@ Hệ thống được thiết kế theo mô hình ELT (Extract - Load - Transfor
                          pipeline/quality_gate.py (12 Blocking Checks)
                                    │ (Nếu PASS)
                                    ▼
-                         pipeline/publish.py (Atomic rename .tmp -> prod)
+                         pipeline/publish.py (Atomic rename .tmp -> prod kèm retry)
                                    │
                                    ▼
                  [ data/warehouse/warehouse.duckdb ]
@@ -120,7 +118,7 @@ Hệ thống được thiết kế theo mô hình ELT (Extract - Load - Transfor
 
 ## 6. Kiểm soát Chất lượng Dữ liệu (Quality Control)
 
-Hệ thống áp dụng chốt chặn chất lượng (Quality Gate) tại `pipeline/quality_gate.py` với 12 quy tắc bắt buộc (Blocking Checks):
+Hệ thống áp dụng chốt chặn chất lượng tại `pipeline/quality_gate.py` với 12 quy tắc bắt buộc:
 
 | STT | Quy tắc kiểm tra | Ngưỡng bắt buộc | Đo lường thực tế | Kết quả |
 |:---:|---|---|---|:---:|
@@ -137,174 +135,210 @@ Hệ thống áp dụng chốt chặn chất lượng (Quality Gate) tại `pipe
 | 11 | Tỷ lệ ghép nối tọa độ block | Khớp >= 98.0% | Khớp 100.00% (9,769/9,769 block) | **PASS** |
 | 12 | Độ tươi dữ liệu (`max(month)`) | Không trễ quá 2 tháng | max(month) = 2026-11 (Trễ 0 tháng) | **PASS** |
 
-- **Báo cáo dòng trùng:** Trong 244,119 dòng giao dịch thô, phát hiện chính xác **318 dòng (0.13%)** có giá trị trùng lặp trên cả 11 thuộc tính gốc trong cùng một tháng. Hệ thống tính `occurrence_no` bằng hàm cửa sổ `ROW_NUMBER() OVER (PARTITION BY business_hash ORDER BY source_row_number)` và gắn khóa thay thế `transaction_sk = sha256(business_hash || occurrence_no)`. Giữ nguyên toàn bộ 318 dòng trong bảng fact, không xóa dòng, và ghi nhận tỷ lệ này tại trang vận hành.
-- **Cơ chế xuất bản an toàn:** Dữ liệu được ghi vào `warehouse_staging.duckdb`. Chỉ khi Quality Gate đạt 12/12 chỉ tiêu, module `publish.py` mới sao chép sang file tạm `.tmp` và thay thế vào `warehouse.duckdb`.
+- **Báo cáo dòng trùng:** Trong 244,119 dòng giao dịch thô, ghi nhận **318 dòng (0.13%)** có giá trị trùng nhau trên cả 11 thuộc tính gốc trong cùng một tháng. Hệ thống tính thứ tự xuất hiện bằng hàm cửa sổ `ROW_NUMBER() OVER (PARTITION BY business_hash ORDER BY source_row_number)` và gắn khóa `transaction_sk = sha256(business_hash || occurrence_no)`. Toàn bộ 318 dòng được giữ nguyên trong bảng fact để bảo toàn số dòng so với dữ liệu nguồn.
+- **Cơ chế xuất bản an toàn:** Dữ liệu được xử lý trong `warehouse_staging.duckdb`. Khi Quality Gate đạt, module `publish.py` tiến hành sao chép sang file tạm `.tmp` và đổi tên thay thế vào `warehouse.duckdb` kèm cơ chế thử lại (retry) nếu gặp khóa đọc trên Windows.
 
 ---
 
 ## 7. Phân tích và Phương pháp Kinh tế lượng
 
-Mô hình định giá Hedonic được xây dựng bằng phương pháp bình phương bé nhất (OLS) với sai số chuẩn vững gom cụm theo từng tòa nhà (`block_id = block || '_' || street_name`), nhằm khắc phục hiện tượng tự tương quan không gian giữa các căn hộ trong cùng một khối nhà:
+Mô hình định giá Hedonic sử dụng phương pháp bình phương bé nhất (OLS) với sai số chuẩn gom cụm theo từng khối nhà (`block_id = block || '_' || street_name`):
 
-$$\ln(\text{resale\_price}_i) = \alpha + \sum_{k} \beta_k \text{LeaseBand}_{ik} + \gamma \text{Area}_i + \delta \text{Storey}_i + \sum \mu_t \text{Town}_{it} + \sum \lambda_m \text{Month}_{im} + \varepsilon_i$$
+$$\ln(\text{resale\_price}_i) = \alpha + \sum_{k} \beta_k \text{LeaseBand}_{ik} + \gamma \text{Area}_i + \delta \text{Storey}_i + \sum_f \theta_f \text{FlatType}_{if} + \sum_t \mu_t \text{Town}_{it} + \sum_m \lambda_m \text{Month}_{im} + \varepsilon_i$$
 
-- **Quy tắc phân tích:** Được mã hóa và khóa cứng tại `config/analysis_rules.yml` với mã băm SHA-256 `08c16165026179f384f6ad92302a3c043ba60d6f4fdef7e030fb5d4d52a85ac7`. Không thay đổi quy tắc, không điều chỉnh ngưỡng, không lọc lại mẫu.
+- **Quy tắc phân tích:** Được lưu tại `config/analysis_rules.yml` với mã băm SHA-256 `08c16165026179f384f6ad92302a3c043ba60d6f4fdef7e030fb5d4d52a85ac7`. Giữ nguyên ngưỡng khóa, không lọc lại mẫu.
 - **Biến phụ thuộc:** $\ln(\text{resale\_price})$ (logarit tự nhiên của giá bán lại).
-- **Hệ số OLS ($\beta$):** Đo lường bằng đơn vị **log points**.
-- **Chênh lệch phần trăm:** Được tính theo công thức $(\exp(\beta) - 1) \times 100\%$.
+- **Hệ số hồi quy ($\beta_k$):** Đo lường bằng đơn vị **log points**.
+- **Chênh lệch phần trăm:** Tính theo công thức $(\exp(\beta_k) - 1) \times 100\%$.
+- **Biến kiểm soát:** Diện tích sàn (`floor_area_sqm`), trung vị khoảng tầng (`storey_mid`), loại căn hộ (`flat_type`), khu vực hành chính (`town`), và tháng giao dịch (`month`).
 - **Nhóm tham chiếu:** Căn hộ có thời hạn thuê còn lại từ **70 đến 74 năm** ($\beta = 0.0$, chênh lệch $0.0\%$).
 
 ---
 
 ## 8. Dashboard Trực quan hóa
 
-Dashboard được xây dựng trên nền tảng Streamlit, đọc dữ liệu trực tiếp ở chế độ chỉ đọc từ `warehouse.duckdb`. Giao diện bao gồm 6 màn hình chức năng:
+Dashboard được xây dựng bằng Streamlit, kết nối trực tiếp ở chế độ chỉ đọc với `warehouse.duckdb` gồm 6 trang chức năng:
 
-1. **Trang chủ Tổng quan (`Home.py`):** Cung cấp các chỉ số thị trường vĩ mô (tổng giao dịch, trung vị giá toàn kỳ, trung vị giá 12 tháng gần nhất, trung vị thời hạn còn lại, số khu vực và số block), xu hướng giá theo quý và cơ cấu loại căn.
+1. **Trang chủ Tổng quan (`Home.py`):** Cung cấp các số đo vĩ mô, biểu đồ xu hướng theo quý và phân bố giao dịch theo dải thời hạn thuê.
 2. **Đường cong Thuê (`1_Duong_cong_thue.py`):** Trực quan hóa đường cong hệ số log và mức chênh lệch giá theo nhóm 5 năm kèm khoảng tin cậy 95% gom cụm block, đối chiếu hai thời kỳ P1 và P2, trình bày bảng số liệu chi tiết và kết luận Q1 = FAIL.
-3. **So sánh Khu vực (`2_So_sanh_khu.py`):** Biểu đồ cột thể hiện mức chiết khấu của nhóm căn hộ cũ (55–65 năm) so với nhóm tham chiếu (70–80 năm) trên 13 khu vực đủ điều kiện, phân loại theo tiêu chuẩn HDB Mature / Non-Mature, báo cáo hệ số tương quan hạng Spearman (0.6209).
-4. **Giá đã Điều chỉnh (`3_Gia_dieu_chinh.py`):** So sánh chuỗi chỉ số giá thô và chỉ số Hedonic chuẩn hóa (năm gốc 2019 = 100) kèm dải tin cậy 95% cho toàn thị trường và 3 phân khúc loại căn chính (3-Room, 4-Room, 5-Room).
-5. **Công cụ Tìm kiếm Khu vực (`4_Cong_cu_tim_khu.py`):** Cho phép người mua lọc dữ liệu 12 tháng gần nhất theo ngân sách, loại căn, thời hạn tối thiểu và cự ly MRT. Bắt buộc hiển thị thông báo: *"Kết quả mô tả giao dịch đã đăng ký gần đây, không phải định giá."* Ẩn các khu vực dưới 10 giao dịch thỏa mãn, không xếp hạng hay gắn nhãn "đáng mua nhất".
-6. **Vận hành & Giám sát (`5_Van_hanh.py`):** Giám sát trạng thái pipeline, lịch sử nạp dữ liệu, độ tươi nguồn, biến động snapshot và chi tiết kết quả 12 quy tắc Quality Gate.
+3. **So sánh Khu vực (`2_So_sanh_khu.py`):** Biểu đồ thể hiện mức chênh lệch giữa nhóm căn hộ 55–65 năm so với nhóm 70–80 năm trên 13 khu vực đủ điều kiện, ghi nhận nhóm phân loại Mature / Non-Mature theo HDB và hệ số tương quan hạng Spearman (0.6209).
+4. **Giá đã Điều chỉnh (`3_Gia_dieu_chinh.py`):** So sánh chuỗi chỉ số giá thô và chỉ số Hedonic (năm gốc 2019 = 100) kèm khoảng tin cậy 95% cho toàn thị trường và 3 loại căn (3-Room, 4-Room, 5-Room).
+5. **Công cụ Tìm kiếm Khu vực (`4_Cong_cu_tim_khu.py`):** Cho phép người dùng lọc dữ liệu 12 tháng gần nhất theo ngân sách, loại căn, thời hạn tối thiểu và cự ly MRT. Bắt buộc hiển thị thông báo: *"Kết quả mô tả giao dịch đã đăng ký gần đây, không phải định giá."* Ẩn các khu vực dưới 10 giao dịch, không xếp hạng.
+6. **Vận hành & Giám sát (`5_Van_hanh.py`):** Giám sát trạng thái pipeline, lịch sử nạp dữ liệu, độ tươi nguồn và chi tiết kết quả 12 quy tắc Quality Gate.
 
 ---
 
 ## 9. Kết quả Phân tích: Quan sát, Diễn giải và Đề xuất
 
-Theo quy định mục 13, phần kết quả được phân tách rõ ràng thành 3 cấp độ:
-
 ### 9.1. Quan sát (Số đo Thực nghiệm Trực tiếp)
 
 #### Q1. Đường cong Thời hạn thuê
-- **Quy mô mẫu:** Trong giai đoạn 1 (2017–2022), số giao dịch tối thiểu ở một nhóm là 5,879 (nhóm 85–89 năm). Trong giai đoạn 2 (2023–2026), số giao dịch tối thiểu là 2,591 (nhóm 80–84 năm). Cả hai đều vượt ngưỡng >= 1,000 giao dịch.
-- **Thứ hạng đơn điệu:** Hệ số OLS tăng đơn điệu theo thời hạn thuê ở cả hai giai đoạn (Spearman rank correlation giữa hệ số hai giai đoạn đạt **1.0000**).
-- **Mức chiết khấu căn hộ cũ so với nhóm 70–74 năm:**
-  - Nhóm `< 50 năm`: P1 là -0.3104 log points (-26.68%); P2 là -0.3327 log points (-28.30%).
-  - Nhóm `50–54 năm`: P1 là -0.2009 log points (-18.20%); P2 là -0.2107 log points (-19.00%).
-  - Nhóm `55–59 năm`: P1 là -0.1237 log points (-11.63%); P2 là -0.1017 log points (-9.67%).
-  - Nhóm `60–64 năm`: P1 là -0.0350 log points (-3.44%); P2 là -0.0489 log points (-4.77%).
-  - Nhóm `65–69 năm`: P1 là -0.0037 log points (-0.37%); P2 là -0.0448 log points (-4.38%).
-- **Sai khác giữa hai thời kỳ:**
-  - Tại nhóm `80–84 năm`: P1 ghi nhận hệ số +0.0845 log points (+8.82%); P2 ghi nhận hệ số +0.1673 log points (+18.21%). Chênh lệch là **0.0828 log points** (tương đương **9.39 điểm phần trăm**).
+- **Quy mô mẫu:** Giai đoạn 1 (2017–2022) có tối thiểu 5,879 giao dịch/nhóm (nhóm 85–89 năm). Giai đoạn 2 (2023–2026) có tối thiểu 2,591 giao dịch/nhóm (nhóm 80–84 năm). Cả hai đều đạt ngưỡng >= 1,000 giao dịch.
+- **Thứ hạng hệ số:** Hệ số OLS tăng đơn điệu theo thời hạn thuê ở cả hai giai đoạn (Spearman rank correlation = **1.0000**).
+- **Hệ số hồi quy và mức chênh lệch giá so với nhóm 70–74 năm:**
+  - Nhóm `< 50 năm`: P1 = -0.3104 log points (-26.68%); P2 = -0.3327 log points (-28.30%).
+  - Nhóm `50–54 năm`: P1 = -0.2009 log points (-18.20%); P2 = -0.2107 log points (-19.00%).
+  - Nhóm `55–59 năm`: P1 = -0.1237 log points (-11.63%); P2 = -0.1017 log points (-9.67%).
+  - Nhóm `60–64 năm`: P1 = -0.0350 log points (-3.44%); P2 = -0.0489 log points (-4.77%).
+  - Nhóm `65–69 năm`: P1 = -0.0037 log points (-0.37%); P2 = -0.0448 log points (-4.38%).
+  - Nhóm `75–79 năm`: P1 = +0.0490 log points (+5.02%); P2 = +0.0275 log points (+2.79%).
+  - Nhóm `80–84 năm`: P1 = +0.0845 log points (+8.82%); P2 = +0.1673 log points (+18.21%).
+  - Nhóm `85–89 năm`: P1 = +0.2026 log points (+22.46%); P2 = +0.1813 log points (+19.88%).
+  - Nhóm `90+ năm`: P1 = +0.2603 log points (+29.74%); P2 = +0.2004 log points (+22.19%).
+- **Độ chênh lệch giữa hai thời kỳ:**
+  - Nhóm thay đổi lớn nhất là `80–84 năm`: Hệ số tăng từ 0.0845 lên 0.1673 log points. Độ chênh lệch đo được là **0.0828 log points** (tương đương **9.39 điểm phần trăm** theo chênh lệch phần trăm).
   - Ngưỡng khóa quy định: độ chênh lệch <= 0.05 (5 điểm phần trăm).
-  - **Kết luận:** **Q1 = FAIL**.
+  - **Kết luận:** **Q1 = FAIL**. Báo cáo số đo thực tế nhóm 80–84 năm thay đổi vượt ngưỡng, không kết luận nguyên nhân khi không có dữ liệu chứng minh.
 
 #### Q2. Mức Chênh lệch Thời hạn theo Khu vực (Town Lease Gap)
-- **Số khu vực đủ điều kiện (>= 200 giao dịch mỗi nhóm ở cả 2 thời kỳ):** Đạt **13 khu vực** (vượt ngưỡng >= 10 khu).
-- **Hệ số tương quan hạng Spearman giữa hai thời kỳ:** Đạt **0.6209** (p = 0.0235, vượt ngưỡng >= 0.60).
-- **Phân loại theo chuẩn HDB (Số đo khớp 100% với `analytics.town_lease_gap`):**
-  - *Khu vực Mature (7 khu):*
-    - TOA PAYOH: P1 = -0.2377 (-21.16%), P2 = -0.2556 (-22.55%).
-    - GEYLANG: P1 = -0.2053 (-18.56%), P2 = -0.2674 (-23.47%).
-    - BUKIT MERAH: P1 = -0.1526 (-14.15%), P2 = -0.1990 (-18.04%).
-    - BEDOK: P1 = -0.1163 (-10.98%), P2 = -0.1469 (-13.66%).
-    - ANG MO KIO: P1 = -0.1161 (-10.97%), P2 = -0.2743 (-23.99%).
-    - KALLANG/WHAMPOA: P1 = -0.0851 (-8.16%), P2 = -0.1715 (-15.76%).
-    - TAMPINES: P1 = +0.0123 (+1.24%), P2 = -0.0197 (-1.95%).
-  - *Khu vực Non-Mature (6 khu):*
-    - JURONG EAST: P1 = -0.1899 (-17.30%), P2 = -0.1438 (-13.39%).
-    - WOODLANDS: P1 = -0.1352 (-12.64%), P2 = -0.0643 (-6.23%).
-    - CHOA CHU KANG: P1 = -0.0895 (-8.56%), P2 = -0.0159 (-1.58%).
-    - BUKIT BATOK: P1 = -0.0856 (-8.21%), P2 = -0.1034 (-9.83%).
-    - JURONG WEST: P1 = -0.0417 (-4.08%), P2 = -0.0835 (-8.01%).
-    - HOUGANG: P1 = -0.0340 (-3.34%), P2 = -0.0289 (-2.85%).
-- **Kiểm tra độ nhạy Leave-One-Out Spearman:** Khoảng dao động từ **0.5524** (khi bỏ Hougang hoặc Tampines) đến **0.6993** (khi bỏ Ang Mo Kio), giá trị trung bình là **0.6192**.
+- **Số khu vực đủ điều kiện (>= 200 giao dịch mỗi nhóm cả 2 thời kỳ):** Đạt **13 khu vực** (ngưỡng >= 10 khu).
+- **Hệ số tương quan hạng Spearman giữa hai thời kỳ:** Đạt **0.6209** (p = 0.0235, ngưỡng >= 0.60).
+- **Số đo chi tiết từ bảng `analytics.town_lease_gap`:**
+  - *Khu vực Mature (nhóm phân loại mô tả theo HDB, chưa kiểm định thống kê riêng biệt):*
+    - TOA PAYOH: P1 = -0.2377 (-21.16%), P2 = -0.2556 (-22.55%)
+    - GEYLANG: P1 = -0.2053 (-18.56%), P2 = -0.2674 (-23.47%)
+    - BUKIT MERAH: P1 = -0.1526 (-14.15%), P2 = -0.1990 (-18.04%)
+    - BEDOK: P1 = -0.1163 (-10.98%), P2 = -0.1469 (-13.66%)
+    - ANG MO KIO: P1 = -0.1161 (-10.97%), P2 = -0.2743 (-23.99%)
+    - KALLANG/WHAMPOA: P1 = -0.0851 (-8.16%), P2 = -0.1715 (-15.76%)
+    - TAMPINES: P1 = +0.0123 (+1.24%), P2 = -0.0197 (-1.95%)
+  - *Khu vực Non-Mature (nhóm phân loại mô tả theo HDB, chưa kiểm định thống kê riêng biệt):*
+    - JURONG EAST: P1 = -0.1899 (-17.30%), P2 = -0.1438 (-13.39%)
+    - WOODLANDS: P1 = -0.1352 (-12.64%), P2 = -0.0643 (-6.23%)
+    - CHOA CHU KANG: P1 = -0.0895 (-8.56%), P2 = -0.0159 (-1.58%)
+    - BUKIT BATOK: P1 = -0.0856 (-8.21%), P2 = -0.1034 (-9.83%)
+    - JURONG WEST: P1 = -0.0417 (-4.08%), P2 = -0.0835 (-8.01%)
+    - HOUGANG: P1 = -0.0340 (-3.34%), P2 = -0.0289 (-2.85%)
+- **Kiểm tra độ nhạy Leave-One-Out Spearman:**
+  - Giá trị rho dao động trong khoảng từ **0.5524 đến 0.6993** (trung bình 0.6192).
+  - Trong 13 lần thử nghiệm, ghi nhận **6 lần hệ số rơi xuống dưới ngưỡng 0.60**: khi loại bỏ Bukit Merah (0.5804), Geylang (0.5664), Hougang (0.5524), Jurong West (0.5944), Tampines (0.5524), và Toa Payoh (0.5664).
 - **Kết luận:** **Q2 = PASS**.
 
-#### Q3. Chỉ số Giá Điều chỉnh (Hedonic vs Raw)
-- **Chuỗi thời gian bao phủ:** Đầy đủ từ năm 2017 đến năm 2026 (10 năm liên tục).
-- **Giai đoạn năm đầy đủ (2019 đến 2025):**
+#### Q3. Chỉ số Giá Điều chỉnh (Hedonic vs Raw) và Cơ cấu Giao dịch
+- **Chuỗi thời gian:** Đầy đủ 10 năm liên tục từ 2017 đến 2026.
+- **So sánh năm gốc 2019 và năm đầy đủ gần nhất 2025:**
   - Giá trung vị thô toàn thị trường tăng từ 400,000 SGD lên 628,000 SGD (**+57.00%**, chỉ số 157.00).
-  - Chỉ số Hedonic đã kiểm soát đặc điểm căn hộ tăng từ 100.0 lên 158.87 (**+58.87%**, 95% CI: [158.34, 159.40]).
-  - Độ chênh lệch giữa chỉ số thô và chỉ số Hedonic ở năm 2025 là **-1.87 điểm chỉ số**.
+  - Chỉ số Hedonic kiểm soát đặc điểm tăng từ 100.0 lên 158.87 (**+58.87%**, 95% CI: [158.34, 159.40]).
+  - Chênh lệch giữa chỉ số thô và chỉ số Hedonic ở năm 2025 là **-1.87 điểm chỉ số**.
 - **Dữ liệu năm 2026 (11 tháng đầu năm 2026, 22,053 giao dịch):**
-  - Chỉ số giá thô đạt 158.75 (+58.75%), chỉ số Hedonic đạt 159.33 (+59.33%).
-- **Giai đoạn 2020–2022:**
-  - Chỉ số giá thô ghi nhận mức tăng cao hơn chỉ số Hedonic: năm 2020 cao hơn +3.14 điểm; năm 2021 cao hơn +5.43 điểm; năm 2022 cao hơn +2.61 điểm.
+  - Chỉ số giá thô đạt 158.75 (+58.75%), chỉ số Hedonic đạt 159.33 (+59.33%). Độ lệch là -0.58 điểm.
+- **Biến động cơ cấu giao dịch thực tế qua các năm (tính từ `fct_resale_transaction`):**
+
+| Năm | Tổng số GD | Tỷ trọng 3-Room (%) | Tỷ trọng 4-Room (%) | Tỷ trọng 5-Room (%) | Loại căn khác (%) | Diện tích TB (m²) | Trung vị diện tích (m²) | Tầng TB | Thời hạn thuê TB (năm) |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 2017 | 20,509 | 24.6% | 42.0% | 24.4% | 9.0% | 97.8 | 96.0 | 8.7 | 74.7 |
+| 2018 | 21,561 | 23.7% | 40.7% | 25.4% | 10.1% | 98.4 | 97.0 | 8.7 | 74.5 |
+| 2019 | 22,186 | 24.4% | 41.6% | 24.5% | 9.5% | 97.1 | 94.0 | 8.5 | 74.5 |
+| 2020 | 23,333 | 23.1% | 41.3% | 25.6% | 9.9% | 97.6 | 93.0 | 8.6 | 75.3 |
+| 2021 | 29,087 | 21.5% | 42.4% | 26.8% | 9.2% | 98.2 | 93.0 | 9.0 | 75.4 |
+| 2022 | 26,720 | 23.7% | 42.3% | 25.1% | 8.8% | 96.9 | 93.0 | 8.9 | 74.3 |
+| 2023 | 25,754 | 24.7% | 44.1% | 22.7% | 8.5% | 95.1 | 93.0 | 8.8 | 74.1 |
+| 2024 | 27,832 | 24.4% | 43.1% | 23.2% | 9.3% | 95.4 | 93.0 | 8.7 | 73.3 |
+| 2025 | 25,084 | 24.5% | 43.2% | 23.0% | 9.2% | 94.9 | 93.0 | 8.9 | 72.4 |
+| 2026 | 22,053 | 22.8% | 43.6% | 24.0% | 9.6% | 96.2 | 93.0 | 9.0 | 71.9 |
+
+- **Đo lường giai đoạn 2020–2022:** Trong các năm 2020–2021, tỷ trọng căn hộ 5-Room tăng lên mức 25.6%–26.8% (so với 24.5% năm 2019), diện tích trung bình tăng lên 97.6–98.2 m² và tầng trung bình tăng lên 8.6–9.0. Cùng thời kỳ này, chỉ số giá thô ghi nhận mức tăng cao hơn chỉ số Hedonic: năm 2020 cao hơn +3.14 điểm; năm 2021 cao hơn +5.43 điểm; năm 2022 cao hơn +2.61 điểm.
 - **Kết luận:** **Q3 = PASS**.
+
+#### Q4. Kết quả Thực tế từ Bộ lọc Tìm kiếm (Dữ liệu 12 Tháng Gần nhất)
+Thực hiện truy vấn trên bảng `main_marts.mart_budget_search` với tiêu chí: Loại căn `4 ROOM`, Ngân sách từ `450,000` đến `650,000 SGD`, Thời hạn thuê tối thiểu `60 năm`, Cự ly ga MRT `< 800 mét`. Áp dụng điều kiện loại bỏ các khu vực có dưới 10 giao dịch thỏa mãn.
+
+Kết quả ghi nhận **14 khu vực hành chính** thỏa mãn tiêu chí, trình bày theo thứ tự bảng chữ cái tên khu vực (không xếp hạng):
+
+| Khu vực hành chính (Town) | Số giao dịch thỏa mãn | Số block thỏa mãn | Trung vị giá (SGD) | Thời hạn thuê TB (năm) | Cự ly MRT TB (mét) |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **BEDOK** | 21 | 14 | 590,000 | 63.1 | 372 |
+| **BUKIT BATOK** | 78 | 40 | 546,250 | 67.0 | 512 |
+| **BUKIT PANJANG** | 287 | 134 | 545,000 | 71.5 | 274 |
+| **CHOA CHU KANG** | 399 | 202 | 552,500 | 73.0 | 436 |
+| **HOUGANG** | 106 | 51 | 600,000 | 68.0 | 542 |
+| **JURONG EAST** | 12 | 7 | 575,000 | 71.1 | 697 |
+| **JURONG WEST** | 205 | 106 | 550,250 | 73.0 | 449 |
+| **PASIR RIS** | 21 | 13 | 602,500 | 63.9 | 689 |
+| **PUNGGOL** | 258 | 141 | 620,000 | 83.4 | 256 |
+| **SEMBAWANG** | 193 | 102 | 553,122 | 77.2 | 487 |
+| **SENGKANG** | 466 | 229 | 588,000 | 78.6 | 286 |
+| **TAMPINES** | 137 | 93 | 620,750 | 65.2 | 512 |
+| **WOODLANDS** | 574 | 274 | 550,000 | 72.4 | 474 |
+| **YISHUN** | 114 | 72 | 550,000 | 61.8 | 524 |
 
 ---
 
 ### 9.2. Diễn giải (Cách hiểu Có điều kiện)
 
-1. **Về sự không ổn định của Q1:** Đường cong chiết khấu thời hạn thuê không giữ được tính bất biến thời gian, chủ yếu do biến động mạnh tại nhóm 80–84 năm giữa hai thời kỳ (hệ số tăng từ 0.0845 lên 0.1673 log points). Việc trượt tiêu chí 5% cho thấy mức định giá của người mua đối với các căn hộ cận mới (80–84 năm) đã thay đổi đáng kể sau năm 2022 so với giai đoạn trước dịch.
-2. **Về phân hóa theo khu vực (Q2):** Phần lớn các khu vực trưởng thành (Toa Payoh, Geylang, Bukit Merah, Ang Mo Kio) có mức chiết khấu sâu (-14% đến -24%) đối với nhóm căn hộ cũ 55–65 năm. Ngược lại, tại một số khu vực như Hougang, Jurong West, hoặc Tampines, khoảng cách giá giữa hai nhóm thời hạn hẹp hơn đáng kể (dưới 8%). Điều này cho thấy tại các khu vực trung tâm lâu đời, người mua phân biệt rất rõ rệt giá trị giữa căn hộ sắp chạm ngưỡng hạn chế CPF/thế chấp so với căn hộ còn dài hạn.
-3. **Về sai lệch thành phần (Q3):** Hiện tượng chỉ số thô tăng nhanh hơn chỉ số Hedonic trong các năm 2020–2022 (chênh lệch đỉnh điểm +5.43 điểm vào năm 2021) phản ánh sự dịch chuyển trong cơ cấu giao dịch thực tế: tỷ trọng giao dịch của các căn hộ diện tích lớn hơn hoặc tầng cao hơn đã tăng lên trong giỏ hàng thị trường, khiến giá trung vị thô tăng nhanh hơn mức tăng giá thuần túy của một căn hộ tiêu chuẩn. Đến giai đoạn 2024–2025, hai chỉ số đã tiệm cận nhau trở lại.
+1. **Về sự thay đổi ở Q1:** Đường cong chiết khấu thời hạn thuê không giữ được tính ổn định qua thời gian do sự thay đổi hệ số tại nhóm 80–84 năm (tăng 0.0828 log points giữa hai thời kỳ). Điều này cho thấy mức định giá của thị trường đối với nhóm thời hạn này có sự dịch chuyển giữa giai đoạn 2017–2022 và giai đoạn sau năm 2022.
+2. **Về phân hóa theo khu vực (Q2):** Mức chênh lệch giá giữa nhóm 55–65 năm và nhóm 70–80 năm có sự khác nhau giữa 13 khu vực. Tại một số khu vực như Toa Payoh, Geylang, Bukit Merah, mức chênh lệch ghi nhận từ -14% đến -24%; trong khi tại Hougang, Jurong West, Tampines, mức chênh lệch ghi nhận dưới -8%.
+3. **Về chênh lệch giữa giá thô và Hedonic (Q3):** Việc giá thô tăng nhanh hơn chỉ số Hedonic trong giai đoạn 2020–2021 diễn ra đồng thời với sự gia tăng tỷ trọng giao dịch của căn hộ 5-Room và căn hộ có diện tích sàn lớn hơn. Khi cơ cấu giao dịch dịch chuyển sang các căn hộ có quy mô lớn hơn, giá trung vị thô phản ánh đồng thời cả biến động giá lẫn sự thay đổi giỏ hàng giao dịch.
 
 ---
 
 ### 9.3. Đề xuất (Việc cần làm và Chỉ số Theo dõi)
 
-1. **Đối với Người mua nhà:**
-   - Khi cân nhắc căn hộ có thời hạn thuê dưới 60 năm tại các khu vực trưởng thành (Toa Payoh, Geylang, Ang Mo Kio), cần dự liệu biên chiết khấu từ 18% đến 24% so với mặt bằng căn hộ 70–80 năm để tránh mua ở mức định giá chưa phản ánh khấu hao thời hạn.
-   - Theo dõi chỉ số: Đơn giá trên m² điều chỉnh theo tuổi thuê (`price_per_sqm / remaining_lease_years`) thay vì chỉ nhìn vào mức giá danh nghĩa.
-2. **Đối với Tổ chức Tín dụng và Định giá:**
-   - Áp dụng hệ số chiết khấu phi tuyến theo từng khu vực thay vì dùng một tỷ lệ khấu hao chung cho toàn bộ thị trường Singapore.
-   - Theo dõi chỉ số: Khoảng cách giữa chỉ số giá thô và chỉ số Hedonic (`gap_raw_vs_hedonic`) để nhận diện thời điểm cơ cấu giao dịch bị méo mó bởi các phân khúc cục bộ.
-3. **Đối với Kỹ sư Vận hành Hệ thống:**
-   - Thiết lập ngưỡng cảnh báo tự động khi số lượng giao dịch ở nhóm thời hạn ngắn (< 50 năm) có biến động trung vị tháng vượt quá 30%.
-   - Theo dõi chỉ số: Tỷ lệ dòng trùng lặp `business_hash` (duy trì dưới 0.2%) và độ trễ dữ liệu nguồn không vượt quá 2 tháng lịch dương.
+1. **Đối với Phân tích Thị trường:**
+   - Theo dõi đồng thời cả chuỗi giá trung vị thô và chuỗi chỉ số Hedonic đã kiểm soát đặc tính để nhận diện thời điểm có sự dịch chuyển cơ cấu giao dịch.
+   - Theo dõi chỉ số chênh lệch thành phần (`gap_raw_vs_hedonic`).
+2. **Đối với Kỹ thuật Vận hành Dữ liệu:**
+   - Theo dõi tỷ lệ dòng trùng lặp `business_hash` qua từng lần nạp dữ liệu định kỳ.
+   - Theo dõi độ trễ thời gian của dữ liệu nguồn `max(month)` so với tháng hiện tại.
 
 ---
 
 ## 10. Giới hạn Nghiên cứu (Bắt buộc theo Mục 14)
 
-Để đảm bảo tính trung thực khoa học và tránh việc người đọc suy diễn sai, nghiên cứu nêu rõ 11 giới hạn bắt buộc sau:
-
-1. **Dữ liệu là giao dịch đã đăng ký:** Bộ dữ liệu chỉ ghi nhận các giao dịch mua bán lại đã hoàn tất thủ tục pháp lý tại HDB, không phản ánh toàn bộ cung - cầu tiềm năng hoặc các giao dịch bị hủy bỏ.
-2. **Đơn vị thời gian theo tháng:** Dữ liệu được ghi nhận theo tháng (`month`), không có ngày giao dịch cụ thể, do đó không phản ánh được biến động giá trong nội bộ tháng.
-3. **Không có vị trí căn hộ chính xác:** Dữ liệu công khai chỉ cung cấp số block và khoảng tầng (ví dụ "04 TO 06"), không có số căn hộ cụ thể (unit number). Các yếu tố vi mô như căn góc, hướng nắng, hướng gió không thể kiểm soát.
-4. **Giá bán không phải giá thuê:** Giá bán lại phản ánh quyền sở hữu có thời hạn của người mua, hoàn toàn khác biệt với giá thuê nhà ở ngắn hạn trên thị trường cho thuê.
-5. **Chưa điều chỉnh lạm phát:** Tất cả số liệu giá trị trong nghiên cứu là giá danh nghĩa bằng Đô-la Singapore (SGD) tại thời điểm đăng ký, chưa điều chỉnh theo Chỉ số Giá tiêu dùng (CPI).
-6. **Thành phần căn hộ thay đổi theo thời gian:** Tỷ trọng căn hộ theo loại phòng, độ tuổi và vị trí bán ra trong mỗi tháng không đồng nhất.
-7. **Thời hạn thuê gắn liền với tuổi thọ và chất lượng công trình:** Các căn hộ có thời hạn thuê ngắn cũng đồng thời là các căn hộ xây dựng từ thập niên 1970–1980 với tiêu chuẩn vật liệu, thiết kế thang máy và tiện ích cũ hơn các căn hộ mới.
-8. **Khoảng cách địa lý là đường thẳng:** Cự ly đến ga MRT gần nhất và khu trung tâm thương mại (CBD Raffles Place) được tính bằng khoảng cách đường thẳng Haversine trên tọa độ kinh vĩ độ, chưa phản ánh khoảng cách đi bộ thực tế trên mạng lưới đường phố.
-9. **Hạ tầng MRT cố định theo thời điểm hiện tại:** Mô hình tính khoảng cách dựa trên mạng lưới 613 cửa ga MRT/LRT hiện hành, không phản ánh lịch sử mở cửa của các tuyến ga mới trong quá khứ.
-10. **Kết quả phản ánh mối liên quan, không phải quan hệ nhân quả:** Các hệ số hồi quy chỉ mô tả tương quan thống kê có điều kiện giữa thời hạn thuê và giá bán lại trong tập dữ liệu quan sát, không chứng minh mối quan hệ nhân quả.
-11. **Không phải tư vấn tài chính:** Các phân tích và công cụ tìm kiếm trong dự án phục vụ mục đích nghiên cứu học thuật, không cấu thành lời khuyên đầu tư hoặc khuyến nghị tài chính cá nhân.
+1. **Dữ liệu là giao dịch đã đăng ký:** Dữ liệu chỉ phản ánh các hợp đồng đã hoàn tất thủ tục đăng ký tại HDB, không phản ánh toàn bộ cung - cầu trên thị trường.
+2. **Đơn vị thời gian theo tháng:** Dữ liệu được ghi nhận theo tháng (`month`), không có ngày giao dịch cụ thể.
+3. **Không có mã giao dịch hoặc vị trí căn chính xác:** Dữ liệu công khai chỉ cung cấp số block và khoảng tầng, không có số căn hộ cụ thể.
+4. **Giá bán không phải giá thuê:** Giá bán lại phản ánh quyền sử dụng đất có thời hạn, không đồng nhất với giá thuê nhà ngắn hạn.
+5. **Chưa điều chỉnh lạm phát:** Số liệu là giá danh nghĩa bằng SGD tại thời điểm đăng ký, chưa điều chỉnh theo Chỉ số Giá tiêu dùng (CPI).
+6. **Thành phần căn được bán thay đổi theo thời gian:** Tỷ trọng căn hộ theo loại phòng, độ tuổi và vị trí bán ra trong mỗi kỳ không cố định.
+7. **Thời hạn thuê liên quan đến tuổi căn và chất lượng căn:** Các căn hộ có thời hạn thuê ngắn hơn đồng thời có năm xây dựng cũ hơn và tiêu chuẩn kỹ thuật ban đầu khác biệt.
+8. **Khoảng cách là đường thẳng:** Cự ly đến ga MRT và CBD được tính bằng khoảng cách đường thẳng Haversine, chưa phản ánh khoảng cách mạng lưới đi bộ thực tế.
+9. **Mạng MRT là hiện tại:** Mô hình tính khoảng cách dựa trên mạng lưới 613 cửa ga hiện hành, không phản ánh lịch sử thời điểm mở cửa của từng tuyến ga trong quá khứ.
+10. **Kết quả là mối liên quan, không phải nhân quả:** Hệ số hồi quy chỉ mô tả tương quan thống kê có điều kiện, không chứng minh quan hệ nhân quả.
+11. **Không phải tư vấn tài chính:** Kết quả nghiên cứu phục vụ mục đích phân tích học thuật, không phải khuyến nghị đầu tư tài chính.
 
 ---
 
 ## 11. Vận hành Thực tế
 
 ### 11.1. Chu kỳ thực thi
-Hệ thống được thiết kế để thực thi định kỳ hàng tháng (khi data.gov.sg phát hành snapshot giao dịch mới) hoặc hằng ngày. Quá trình kiểm tra SHA-256 đối với file CSV tải về đảm bảo nếu dữ liệu nguồn không thay đổi, hệ thống ghi nhận trạng thái `no_change` trong `manifest.json` và không ghi đè dữ liệu thừa.
+Hệ thống được thiết kế để thực thi định kỳ. Cơ chế so sánh mã băm SHA-256 đối với file dữ liệu tải về đảm bảo nếu dữ liệu nguồn không có thay đổi, hệ thống ghi nhận trạng thái `no_change` trong `manifest.json` và không ghi đè dữ liệu thừa.
 
 ### 11.2. Cơ chế khóa file trên hệ điều hành Windows
-Trên môi trường Windows, khi tiến trình Streamlit Dashboard hoặc một kết nối DuckDB đang mở ở chế độ đọc (`read_only=True`), hệ điều hành sẽ thiết lập khóa file. Lệnh `os.replace` khi thực hiện xuất bản nguyên tử từ `warehouse_staging.duckdb` sang `warehouse.duckdb` sẽ gặp lỗi `PermissionError: [WinError 5] Access is denied`.  
-Để khắc phục, quy trình vận hành quy định rõ:
-1. Module kết nối `app/db.py` của Streamlit tự động đóng kết nối ngay sau khi hoàn thành truy vấn (`finally: con.close()`).
-2. Khi thực hiện quy trình nạp và xuất bản toàn trình (`pipeline/run_pipeline.py`), hệ thống dọn dẹp các tệp tạm `.tmp` và bảo toàn nguyên vẹn tệp kho dữ liệu đang phục vụ nếu phát hiện khóa file.
+Trên môi trường Windows, khi có tiến trình đang mở kết nối đọc tới `warehouse.duckdb`, lệnh thay thế file nguyên tử sẽ gặp lỗi truy cập `PermissionError`.  
+Quy trình xử lý được thiết kế như sau:
+1. Module kết nối `app/db.py` của Streamlit tự động đóng kết nối ngay sau khi hoàn thành truy vấn.
+2. Module `pipeline/publish.py` áp dụng cơ chế thử lại (tối đa 5 lần với khoảng chờ giữa các lần). Nếu file vẫn bị khóa sau toàn bộ số lần thử lại, hệ thống giữ nguyên tệp kho dữ liệu hiện tại, dọn dẹp file tạm `.tmp` và ghi nhận trạng thái xuất bản thất bại (FAILED), không làm gián đoạn tiến trình dashboard đang chạy.
 
 ---
 
 ## 12. Kết luận
 
-Dự án đã xây dựng thành công một hệ thống ELT hoàn chỉnh, khép kín và tự động hóa cao từ khâu trích xuất dữ liệu gốc trên data.gov.sg đến khâu chuyển đổi dbt, kiểm định chất lượng nghiêm ngặt và phục vụ dashboard tương tác.
+Dự án đã thiết lập quy trình ELT từ khâu trích xuất dữ liệu trên data.gov.sg, chuyển đổi qua dbt, kiểm định chất lượng và phục vụ dashboard:
 
-Về mặt học thuật và thực nghiệm:
-- **Q1 (FAIL):** Đường cong chiết khấu thời hạn thuê giảm đơn điệu theo số năm còn lại (Spearman = 1.0), nhưng mức chênh lệch giữa hai thời kỳ ở nhóm 80–84 năm đạt 8.28% (vượt ngưỡng khóa 5%), cho thấy sự thiếu ổn định thời gian ở phân khúc căn hộ cận mới sau dịch. Dự án ghi nhận trung thực kết quả này thay vì nới lỏng ngưỡng khóa.
-- **Q2 (PASS):** Mức chiết khấu thời hạn thuê có sự phân hóa sâu sắc và có tính hệ thống giữa các khu vực hành chính (Spearman thứ hạng = 0.6209 trên 13 khu vực đủ điều kiện). Các khu vực trưởng thành (Mature Towns) chịu mức chiết khấu sâu hơn rõ rệt đối với căn hộ cũ 55–65 năm.
-- **Q3 (PASS):** Chỉ số Hedonic đã kiểm soát thành công sự dịch chuyển cơ cấu căn hộ từ năm gốc 2019 đến năm 2025 (+58.87% so với mức tăng thô +57.00%), bóc tách được mức sai lệch thành phần trong các năm 2020–2022.
+- **Q1 (FAIL):** Đường cong hệ số giảm theo số năm thuê còn lại (Spearman = 1.0), nhưng độ chênh lệch giữa hai thời kỳ ở nhóm 80–84 năm đo được là **0,0828 log points** (tương đương **9,39 điểm phần trăm**), vượt ngưỡng quy định 0.05 (5 điểm phần trăm). Giữ nguyên kết luận FAIL theo quy tắc đã khóa.
+- **Q2 (PASS):** Mức chênh lệch giá giữa nhóm 55–65 năm và nhóm 70–80 năm có sự khác biệt giữa 13 khu vực đủ điều kiện (Spearman thứ hạng = 0.6209). Kiểm tra độ nhạy Leave-One-Out ghi nhận khoảng dao động từ 0.5524 đến 0.6993, trong đó có 6/13 lần rơi xuống dưới 0.60. Nhóm phân loại Mature / Non-Mature theo HDB là phân loại mô tả, chưa kiểm định thống kê riêng biệt.
+- **Q3 (PASS):** Chuỗi chỉ số Hedonic đã kiểm soát thành phần căn hộ từ năm gốc 2019 đến năm đầy đủ 2025 (+58.87% so với mức tăng thô +57.00%), bóc tách được sự gia tăng tỷ trọng của các căn hộ diện tích lớn hơn trong giai đoạn 2020–2021.
+- **Q4 (HOẠT ĐỘNG):** Công cụ tìm kiếm hỗ trợ lọc dữ liệu giao dịch 12 tháng gần nhất theo ngân sách, thời hạn thuê và cự ly MRT, hiển thị 14 khu vực thỏa mãn mà không xếp hạng.
 
 ---
 
 ## 13. Phụ lục
 
 ### 13.1. Từ điển Dữ liệu (Bảng Fact cốt lõi)
-Tài liệu chi tiết tại [docs/data_dictionary.md](file:///d:/video/hdb_elt/docs/data_dictionary.md).
+Chi tiết tại [docs/data_dictionary.md](file:///d:/video/hdb_elt/docs/data_dictionary.md).
 
-| Tên cột | Kiểu dữ liệu | Ý nghĩa |
+| Tên cột | Kiểu dữ liệu | Diễn giải |
 |---|---|---|
-| `transaction_sk` | VARCHAR (SHA-256) | Khóa thay thế duy nhất của giao dịch (`sha256(business_hash \|\| occurrence_no)`) |
+| `transaction_sk` | VARCHAR (SHA-256) | Khóa thay thế duy nhất của giao dịch |
 | `business_hash` | VARCHAR (SHA-256) | Mã băm xác định từ 11 thuộc tính gốc đã chuẩn hóa |
 | `occurrence_no` | INTEGER | Thứ tự xuất hiện của dòng giao dịch có cùng `business_hash` |
-| `month` | VARCHAR | Tháng đăng ký giao dịch (định dạng `YYYY-MM`) |
+| `month` | VARCHAR | Tháng đăng ký giao dịch (`YYYY-MM`) |
 | `town` | VARCHAR | Khu vực hành chính thị trấn HDB |
-| `flat_type` | VARCHAR | Loại căn hộ (ví dụ: `3 ROOM`, `4 ROOM`, `5 ROOM`) |
+| `flat_type` | VARCHAR | Loại căn hộ |
 | `block` | VARCHAR | Số hiệu block tòa nhà |
 | `street_name` | VARCHAR | Tên đường |
-| `storey_mid` | DOUBLE | Trung vị của khoảng tầng giao dịch |
+| `storey_mid` | DOUBLE | Trung vị của khoảng tầng |
 | `floor_area_sqm` | DOUBLE | Diện tích sàn căn hộ (m²) |
 | `remaining_lease_years` | DOUBLE | Thời hạn thuê còn lại quy đổi ra năm số thực |
 | `lease_band_5yr` | VARCHAR | Nhóm thời hạn thuê 5 năm |
@@ -320,23 +354,14 @@ Tài liệu chi tiết tại [docs/data_dictionary.md](file:///d:/video/hdb_elt/
 - **NUS 3D Dataset:** `https://github.com/ualsg/hdb3d-data`
 - **OneMap SLA:** `https://www.onemap.gov.sg/apidocs/`
 
-### 13.3. Hướng dẫn Tái lập Môi trường và Thực thi
+### 13.3. Hướng dẫn Chạy lại
 ```powershell
-# 1. Di chuyển vào thư mục dự án
 Set-Location "D:\video\hdb_elt"
-
-# 2. Cài đặt các thư viện phụ thuộc
 pip install -r requirements.txt
-
-# 3. Chạy toàn bộ pipeline tích hợp (Extract, Load, dbt, Analysis, Quality Gate, Publish)
 python pipeline/run_pipeline.py
-
-# 4. Kiểm thử chất lượng bằng dbt và pytest
 Set-Location "dbt_hdb"
 dbt test --profiles-dir .
 Set-Location ".."
 pytest -v
-
-# 5. Khởi chạy giao diện Dashboard
 streamlit run app/Home.py
 ```

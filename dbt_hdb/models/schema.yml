@@ -12,12 +12,23 @@ models:
       - name: month
         tests:
           - not_null
+          - relationships:
+              to: ref('dim_month')
+              field: month
       - name: town
         tests:
           - not_null
+          - relationships:
+              to: ref('dim_town')
+              field: town
       - name: flat_type
         tests:
           - not_null
+          - accepted_values:
+              values: ['1 ROOM', '2 ROOM', '3 ROOM', '4 ROOM', '5 ROOM', 'EXECUTIVE', 'MULTI-GENERATION']
+          - relationships:
+              to: ref('dim_flat_type')
+              field: flat_type
       - name: block
         tests:
           - not_null
@@ -57,4 +68,5 @@ models:
         tests:
           - unique
           - not_null
-
+          - accepted_values:
+              values: ['1 ROOM', '2 ROOM', '3 ROOM', '4 ROOM', '5 ROOM', 'EXECUTIVE', 'MULTI-GENERATION']

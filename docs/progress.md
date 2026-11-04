@@ -159,4 +159,53 @@
   - `python pipeline/run_pipeline.py`
 - **Kết quả:** ĐẠT 100%. Toàn bộ 6 trang hoạt động chính xác trên cơ sở dữ liệu thật, không có lỗi giao diện hay truy vấn.
 - **Trạng thái:** HOÀN THÀNH GIAI ĐOẠN 5.
-- **Quy tắc dừng:** DỪNG TRƯỚC GIAI ĐOẠN 6. Không cấu hình Task Scheduler, Docker, Airflow, MinIO theo đúng yêu cầu đặc tả khi chưa có sự phê duyệt nghiệm thu của chủ dự án.
+
+---
+
+## Giai đoạn 6: Lịch chạy, Vận hành và Hoàn thiện Báo cáo Nghiệm thu
+- **Thời gian:** 04/11/2026 17:15 UTC+7
+- **Việc đã làm:**
+  - **Ví dụ mở đầu & Báo cáo:**
+    - Truy vấn 2 căn hộ thực tế tại khu Queenstown, tháng 2024-07, loại 3 ROOM, 60.0 m², khoảng tầng 04 TO 06 từ `fct_resale_transaction`:
+      - Căn thuê ngắn (41.58 năm): Block 95 C'wealth Dr, 322,000 SGD ($5,366.67/m²), `transaction_sk = 6422b1795eabe983b98ee59eb120fa2b10dc0c446852ce9d5b9091f6f0255df5`.
+      - Căn thuê dài (83.17 năm): Block 89 Tanglin Halt Rd, 592,000 SGD ($9,866.67/m²), `transaction_sk = bff535e26da9e95120bd78044e33f306d39c7da1902da444ce0cafa0fd701d83`.
+      - Chênh lệch đơn giá: +83.85% (+4,500.00 SGD/m²). Ghi nhận câu lệnh SQL và SK tại `docs/report_example.md`, nêu rõ đây là minh họa mô tả, không phải kết luận nhân quả đã kiểm soát.
+    - Cập nhật `report/report.md` chuẩn hóa theo Mục 13 và Mục 14:
+      - Mục 12 dùng chuẩn xác 0.0828 log points và 9.39 điểm phần trăm.
+      - Công thức hedonic Mục 7 bổ sung kiểm soát loại căn hộ ($\sum_f \theta_f \text{FlatType}_{if}$).
+      - Xóa triệt để các nội dung không có căn cứ hoặc chủ quan: CPF, tín dụng, SERS, VERS, "định giá hợp lý", "tránh mua", "price_per_sqm / remaining_lease_years", "giá thực tế", "tăng giá thuần túy", các từ ngữ "hoàn chỉnh", "tự động hóa cao", "sâu sắc", "có tính hệ thống", và "tuyệt đối".
+      - Q1: Báo cáo nhóm thay đổi, giữ kết luận FAIL, không suy diễn nguyên nhân ngoài số liệu.
+      - Q2: Nêu rõ 13 khu vực đủ mẫu, Spearman 0.6209, leave-one-out 0.5524–0.6993, nêu rõ 6 lần dưới 0.60; phân loại mature/non-mature là nhóm mô tả theo HDB, chưa kiểm định thống kê.
+      - Q3: Bổ sung bảng cơ cấu giao dịch 2017–2026 (tỷ trọng 3, 4, 5-room, diện tích TB/trung vị, tầng TB, thời hạn TB).
+      - Q4: Bổ sung bảng kết quả thực tế từ bộ lọc `mart_budget_search` (14 khu vực theo thứ tự chữ cái, không xếp hạng).
+      - Đầy đủ 11 giới hạn bắt buộc theo Mục 14.
+  - **Mở rộng dbt Data Tests:**
+    - Bổ sung 8 data tests mới:
+      - Kiểm tra quan hệ khóa ngoại (`relationships`): `fct_resale_transaction` -> `dim_month`, `dim_town`, `dim_flat_type`.
+      - Kiểm tra tập giá trị hợp lệ (`accepted_values`) cho `flat_type` (7 loại căn thực tế).
+      - 3 singular domain tests: `assert_fct_resale_price_positive`, `assert_fct_floor_area_positive`, `assert_fct_remaining_lease_range` (0 < remaining_lease_years <= 99).
+    - Chạy `dbt build` và `dbt test`: PASS 40/40 (16 models, 24 data tests 100% PASS).
+  - **Cơ chế Retry Publish trên Windows:**
+    - Cập nhật `pipeline/publish.py`: thêm cơ chế thử lại (tối đa 5 lần, delay 1.0s) khi gặp lỗi khóa file `PermissionError [WinError 5]`. Nếu sau 5 lần vẫn bị khóa bởi ứng dụng đọc, pipeline giữ nguyên kho cũ, dọn tệp tạm, ghi log FAILED và thoát an toàn mà không đóng tiến trình dashboard Streamlit.
+    - Cập nhật `tests/test_quality_gate.py`: thêm `test_publish_behavior_when_read_connection_open_on_windows`. Chạy `pytest -v`: PASS 10/10 tests 100%.
+  - **Đăng ký Task Scheduler & Nhật ký Vận hành:**
+    - Viết `scripts/run_pipeline.ps1`: thực thi pipeline tự động, tạo log riêng biệt theo dấu thời gian (`logs/scheduler/run_YYYYMMDD_HHMMSS.log`), không xóa log cũ, phát hiện và ghi nhận các lần chạy lỡ (> 26 giờ) vào `logs/scheduler/schedule_history.json`.
+    - Viết `scripts/register_task.ps1` và đăng ký thành công tác vụ `HDB_ELT_Daily_Run` với Windows Task Scheduler:
+      - Lịch chạy: Hằng ngày lúc 08:15 AM.
+      - Trạng thái: Ready (Next Run: 05/11/2026 8:15:00 AM).
+    - Chạy thử nghiệm thành công `scripts/run_pipeline.ps1`:
+      - Phiên chạy `run_id = a523843a-1161-4e3a-91d3-141a5201a252`.
+      - Tải HDB xác nhận `status: no_change` không trùng file.
+      - Nạp DuckDB, dbt build (24 tests PASS), kinh tế lượng, Quality Gate (12 checks PASS), Publish kho sản xuất hoàn tất. Mã thoát 0.
+      - Nhật ký ghi nhận tại `logs/scheduler/run_20261104_170831.log` và `logs/scheduler/schedule_history.json`.
+    - Viết tài liệu hướng dẫn vận hành và ứng phó sự cố tại `docs/runbook.md`.
+    - Cập nhật `docs/acceptance_report.md` toàn diện với đầy đủ bằng chứng, số liệu kiểm thử và trạng thái theo dõi 7 lần chạy.
+- **Lệnh đã chạy:**
+  - `python pipeline/publish.py`
+  - `dbt build --profiles-dir .` (tại `dbt_hdb`)
+  - `dbt test --profiles-dir .` (tại `dbt_hdb`)
+  - `pytest -v`
+  - `powershell -ExecutionPolicy Bypass -File scripts/register_task.ps1`
+  - `powershell -ExecutionPolicy Bypass -File scripts/run_pipeline.ps1`
+- **Kết quả:** ĐẠT. Toàn bộ các yêu cầu nghiệm thu, kiểm thử và tài liệu đã hoàn thành. Hệ thống đang hoạt động và theo dõi lịch chạy tự động.
+- **Trạng thái:** HOÀN THÀNH GIAI ĐOẠN 6 (Đang theo dõi tích lũy 7 lần chạy hàng ngày).

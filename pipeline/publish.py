@@ -1,5 +1,6 @@
 import os
 import shutil
+import time
 import logging
 from typing import Dict, Any, Optional
 
@@ -9,6 +10,8 @@ def publish_warehouse(
     staging_db_path: str,
     prod_db_path: str,
     quality_passed: bool,
+    max_retries: int = 5,
+    retry_delay_sec: float = 1.0,
     logger = None
 ) -> bool:
     if logger is None:
@@ -33,33 +36,42 @@ def publish_warehouse(
         except Exception:
             pass
 
-    try:
-        # Copy staging file to tmp path
-        shutil.copy2(staging_db_path, tmp_publish_path)
-        # Atomic replace
-        os.replace(tmp_publish_path, prod_db_path)
-        logger.info(f"Successfully published production warehouse to '{prod_db_path}'")
-        return True
-    except PermissionError as pe:
-        logger.error(f"Atomic publish failed due to file lock (PermissionError): {pe}")
-        logger.error(
-            "LƯU Ý VẬN HÀNH TRÊN WINDOWS: Cần dừng hoặc giải phóng các kết nối đọc (read connections) "
-            f"đang mở tới '{prod_db_path}' (ví dụ: phiên truy vấn Streamlit/DuckDB) trước khi thực hiện publish."
-        )
-        if os.path.exists(tmp_publish_path):
-            try:
-                os.remove(tmp_publish_path)
-            except Exception:
-                pass
-        raise pe
-    except Exception as e:
-        logger.error(f"Atomic publish failed: {e}")
-        if os.path.exists(tmp_publish_path):
-            try:
-                os.remove(tmp_publish_path)
-            except Exception:
-                pass
-        raise e
+    for attempt in range(1, max_retries + 1):
+        try:
+            # Copy staging file to tmp path
+            shutil.copy2(staging_db_path, tmp_publish_path)
+            # Atomic replace
+            os.replace(tmp_publish_path, prod_db_path)
+            logger.info(f"Successfully published production warehouse to '{prod_db_path}' (attempt {attempt}/{max_retries})")
+            return True
+        except PermissionError as pe:
+            logger.warning(
+                f"Publish attempt {attempt}/{max_retries} failed due to file lock (PermissionError): {pe}. "
+                f"Waiting {retry_delay_sec}s before retry... (Không can thiệp hoặc hủy tiến trình dashboard)"
+            )
+            if os.path.exists(tmp_publish_path):
+                try:
+                    os.remove(tmp_publish_path)
+                except Exception:
+                    pass
+            if attempt < max_retries:
+                time.sleep(retry_delay_sec)
+            else:
+                logger.error(
+                    f"Toàn bộ {max_retries} lần thử publish đều thất bại do file đang bị khóa trên Windows. "
+                    f"Giữ nguyên kho dữ liệu cũ tại '{prod_db_path}'. Ghi nhận trạng thái publish: FAILED."
+                )
+                return False
+        except Exception as e:
+            logger.error(f"Atomic publish failed with unexpected error: {e}")
+            if os.path.exists(tmp_publish_path):
+                try:
+                    os.remove(tmp_publish_path)
+                except Exception:
+                    pass
+            return False
+
+    return False
 
 if __name__ == "__main__":
     publish_warehouse("data/warehouse/warehouse_staging.duckdb", "data/warehouse/warehouse.duckdb", True)

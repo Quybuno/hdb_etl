@@ -132,7 +132,7 @@ def test_quality_gate_failure_preserves_file_hash(tmp_path):
     assert hash_before == hash_after, f"Hash changed! Before: {hash_before}, After: {hash_after}"
 
 def test_publish_behavior_when_read_connection_open_on_windows(tmp_path):
-    # Test behavior when a process has an open read handle on Windows
+    # Test retry mechanism and safe fallback when a reader holds an open handle on Windows
     staging_db = str(tmp_path / "staging.duckdb")
     prod_db = str(tmp_path / "prod.duckdb")
     setup_dummy_duckdb(staging_db, row_count=200)
@@ -140,20 +140,21 @@ def test_publish_behavior_when_read_connection_open_on_windows(tmp_path):
 
     hash_before = get_file_sha256(prod_db)
 
-    # Simulate an active reader holding a file handle
+    # Simulate an active reader holding a file handle (e.g. active query)
     con_reader = duckdb.connect(prod_db, read_only=True)
     try:
-        # On Windows, os.replace raises PermissionError because the file handle is locked
-        with pytest.raises(PermissionError):
-            publish_warehouse(staging_db, prod_db, quality_passed=True)
+        # On Windows, file replacement fails gracefully with retry, logs warning without killing reader,
+        # preserves old warehouse and returns False (FAILED)
+        success = publish_warehouse(staging_db, prod_db, quality_passed=True, max_retries=2, retry_delay_sec=0.1)
+        assert success is False, "Publish should return False when all retries encounter file lock"
 
         # Confirm prod_db was not corrupted or modified
-        assert get_file_sha256(prod_db) == hash_before
+        assert get_file_sha256(prod_db) == hash_before, "prod_db hash must remain untouched after failed retry publish"
     finally:
         # Once the read connection is closed/released, publish succeeds cleanly
         con_reader.close()
 
     success = publish_warehouse(staging_db, prod_db, quality_passed=True)
-    assert success is True
+    assert success is True, "Publish must succeed once read lock is released"
     # The new database hash should now reflect the updated staging database
     assert get_file_sha256(prod_db) != hash_before
