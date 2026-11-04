@@ -29,7 +29,19 @@ def setup_dummy_duckdb(db_path, row_count=1000):
     """, [row_count + 1])
     con.execute("""
         CREATE TABLE raw.hdb_resale_snapshot AS
-        SELECT * FROM main_marts.fct_resale_transaction;
+        SELECT
+            'run_dummy' AS run_id,
+            '2026-11-04' AS run_date,
+            CURRENT_TIMESTAMP AS loaded_at_utc,
+            row_number() over () AS source_row_number,
+            month, town, flat_type, block, street_name,
+            '04 TO 06' AS storey_range,
+            cast(floor_area_sqm as varchar) AS floor_area_sqm,
+            'Model A' AS flat_model,
+            '1985' AS lease_commence_date,
+            '65 years' AS remaining_lease,
+            cast(resale_price as varchar) AS resale_price
+        FROM main_marts.fct_resale_transaction;
     """)
     con.close()
 

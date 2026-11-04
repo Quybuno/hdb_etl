@@ -130,3 +130,33 @@
 - **Kết quả:** Q1: FAIL (ghi nhận trung thực, đường cong có bước nhảy tại nhóm 80-84 năm sau 2023), Q2: PASS, Q3: PASS. Thỏa mãn điều kiện "Ít nhất một trong Q2 hoặc Q3 đạt" theo mục 15 đặc tả.
 - **Trạng thái:** ĐẠT. Đủ điều kiện chuyển sang Giai đoạn 5.
 - **Việc tiếp theo:** Giai đoạn 5: Xây dựng Streamlit Dashboard hoàn chỉnh theo mục 11 kết nối dữ liệu thật từ `warehouse.duckdb`.
+
+---
+
+## Giai đoạn 5: Dashboard Streamlit
+- **Thời gian:** 04/11/2026 16:25 UTC+7
+- **Việc đã làm:**
+  - Thiết kế và xây dựng giao diện Streamlit tương tác đọc trực tiếp từ `data/warehouse/warehouse.duckdb` (chế độ `read_only=True`) qua module `app/db.py`.
+  - Phát triển đầy đủ 6 màn hình chức năng theo mục 11 của tài liệu đặc tả:
+    1. `app/Home.py`: Trang chủ tổng quan hệ thống, tổng số giao dịch, khoảng thời gian dữ liệu, giá trung vị/m2, biểu đồ xu hướng theo năm và bảng tóm tắt giao dịch theo dải thời hạn thuê.
+    2. `app/pages/1_Duong_cong_thue.py`: Trình diễn đường cong thời hạn thuê theo nhóm 5 năm (kết quả Q1), đối chiếu giữa hai thời kỳ P1 (2017-2022) và P2 (2023-2026), hiển thị bảng số liệu chi tiết, phân tích nguyên nhân kết quả FAIL và các giới hạn kinh tế lượng.
+    3. `app/pages/2_So_sanh_khu.py`: Trình diễn mức chênh lệch giá giữa căn hộ thuê ngắn (55-65 năm) và căn hộ chuẩn (70-80 năm) theo từng khu vực (kết quả Q2), phân loại Mature vs Non-Mature town, biểu đồ cột chênh lệch và ma trận tương quan thứ hạng (Spearman = 0.6209 - PASS).
+    4. `app/pages/3_Gia_dieu_chinh.py`: So sánh trực quan chuỗi chỉ số giá thô và chỉ số giá Hedonic chuẩn hóa (kết quả Q3, gốc 2019 = 100) kèm dải tin cậy 95% gom cụm theo block, phân rã theo 3 loại căn chính (3-Room, 4-Room, 5-Room).
+    5. `app/pages/4_Cong_cu_tim_khu.py`: Công cụ hỗ trợ người mua tra cứu khu vực theo ngân sách và dải thời hạn thuê mong muốn dựa trên bảng `mart_budget_search` (dữ liệu 12 tháng gần nhất). Bắt buộc hiển thị cảnh báo: *"Công cụ chỉ hỗ trợ thu hẹp phạm vi tìm kiếm theo tiêu chí ngân sách và nhu cầu thời hạn; không cấu thành khuyến nghị đầu tư hoặc xếp hạng khu đáng mua."* Tuyệt đối không có tính năng xếp hạng hoặc gán nhãn "đáng mua nhất".
+    6. `app/pages/5_Van_hanh.py`: Trang giám sát sức khỏe dữ liệu và quy trình ELT dành cho kỹ sư vận hành, hiển thị lịch sử chạy pipeline, chi tiết kết quả 12 quy tắc của Quality Gate mới nhất, độ tươi dữ liệu nguồn và trạng thái phân tích.
+  - Chạy thử dashboard thực tế trên cổng 8501 (`http://localhost:8501`), kiểm tra tất cả bộ lọc dữ liệu.
+  - Sử dụng headless Chrome tự động hóa qua `scripts/capture_screenshots.py` để chụp ảnh màn hình chất lượng cao của cả 6 trang, lưu trữ tại thư mục `docs/screenshots/`:
+    - `docs/screenshots/home_overview.png`
+    - `docs/screenshots/lease_curve.png`
+    - `docs/screenshots/town_comparison.png`
+    - `docs/screenshots/price_index.png`
+    - `docs/screenshots/budget_search.png`
+    - `docs/screenshots/operations_quality.png`
+  - Xây dựng kịch bản điều phối tích hợp toàn trình `pipeline/run_pipeline.py` (tự động hóa tuần tự từ Extract HDB/MRT/Blocks, Load DuckDB, dbt build, Econometric Analysis, Quality Gate đến Atomic Publish). Đã kiểm thử chạy thành công toàn bộ pipeline với mã thoát 0.
+- **Lệnh đã chạy:**
+  - `python -m streamlit run app/Home.py --server.port 8501 --server.headless true`
+  - `python scripts/capture_screenshots.py`
+  - `python pipeline/run_pipeline.py`
+- **Kết quả:** ĐẠT 100%. Toàn bộ 6 trang hoạt động chính xác trên cơ sở dữ liệu thật, không có lỗi giao diện hay truy vấn.
+- **Trạng thái:** HOÀN THÀNH GIAI ĐOẠN 5.
+- **Quy tắc dừng:** DỪNG TRƯỚC GIAI ĐOẠN 6. Không cấu hình Task Scheduler, Docker, Airflow, MinIO theo đúng yêu cầu đặc tả khi chưa có sự phê duyệt nghiệm thu của chủ dự án.

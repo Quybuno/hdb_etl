@@ -78,8 +78,16 @@ def run_quality_gate(
                 "message": "Columns verified in raw snapshot."
             })
 
-        # Get counts from database
-        raw_count = con.execute("SELECT count(*) FROM raw.hdb_resale_snapshot").fetchone()[0]
+        # Get counts from database for latest snapshot
+        raw_cols = [c[0] for c in con.execute("DESCRIBE raw.hdb_resale_snapshot").fetchall()]
+        if "run_id" in raw_cols and "loaded_at_utc" in raw_cols:
+            raw_count = con.execute("""
+                SELECT count(*)
+                FROM raw.hdb_resale_snapshot
+                WHERE run_id = (SELECT run_id FROM raw.hdb_resale_snapshot ORDER BY loaded_at_utc DESC LIMIT 1)
+            """).fetchone()[0]
+        else:
+            raw_count = con.execute("SELECT count(*) FROM raw.hdb_resale_snapshot").fetchone()[0]
         fact_count = con.execute("SELECT count(*) FROM main_marts.fct_resale_transaction").fetchone()[0]
 
         # Check 3: Số dòng không giảm quá 1% so với snapshot publish gần nhất

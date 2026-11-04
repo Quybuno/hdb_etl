@@ -28,3 +28,26 @@ File này ghi nhận các quyết định kiến trúc, lựa chọn kỹ thuậ
 - **Ngày:** 04/11/2026
 - **Bối cảnh:** Cần tọa độ block để tính khoảng cách tới MRT và CBD.
 - **Quyết định:** Tải GeoJSON MRT từ API công khai `d_b39d3a0871985372d7e1637193335da5`, trích xuất tọa độ cửa ga. Tọa độ block kết hợp giữa NUS 3D HDB (nền tảng) và OneMap Search API (cho các block mới), có cache local để tránh gọi lại API nhiều lần.
+
+## Quyết định 005: Xuất bản Nguyên tử Cơ sở dữ liệu (Atomic Warehouse Publishing)
+- **Ngày:** 04/11/2026
+- **Bối cảnh:** Toàn bộ quá trình ELT, dbt transformation, phân tích kinh tế lượng và quality gate cần thực hiện trên môi trường tách biệt trước khi phục vụ ứng dụng Dashboard, tránh tình trạng Dashboard đọc phải dữ liệu dở dang hoặc cơ sở dữ liệu bị hỏng khi gặp lỗi.
+- **Quyết định:**
+  - Tách hai file cơ sở dữ liệu: `data/warehouse/warehouse_staging.duckdb` (dành riêng cho pipeline ELT ghi và chạy dbt) và `data/warehouse/warehouse.duckdb` (dành riêng cho Streamlit dashboard đọc).
+  - Khi Quality Gate đạt (toàn bộ 12 blocking checks PASS), thực hiện copy sang file tạm thời `warehouse.duckdb.tmp` rồi đổi tên nguyên tử (`atomic rename` / `replace`) đè lên `warehouse.duckdb`.
+  - Nếu Quality Gate thất bại, lập tức dừng và không ghi đè `warehouse.duckdb`.
+
+## Quyết định 006: Khóa cứng quy tắc phân tích kinh tế lượng và giữ nguyên kết quả Q1 FAIL
+- **Ngày:** 04/11/2026
+- **Bối cảnh:** Quy tắc khóa cứng tại `config/analysis_rules.yml` có SHA-256 xác thực. Ở câu hỏi nghiên cứu Q1 (Đường cong thời hạn thuê theo nhóm 5 năm), sai khác giữa hai thời kỳ P1 (2017-2022) và P2 (2023-2026) ở nhóm 80-84 năm đạt 8.28%, vượt ngưỡng khóa 5.0%.
+- **Quyết định:** Giữ nguyên 100% ngưỡng khóa, đánh dấu Q1 là FAIL, không nới lỏng ngưỡng thành 10% hay lọc bỏ nhóm để "ép" đạt chỉ tiêu.
+- **Lý do:** Tuân thủ quy tắc bắt buộc số 2 ("Chỉ dùng dữ liệu thật"), số 8 ("Không tự sửa ngưỡng đã khóa") và số 11 ("Không kết luận nhân quả"). Phản ánh trung thực biến động cung cầu của thị trường HDB sau dịch (làn sóng căn hộ mới đạt MOP diện tích lớn tăng mạnh ở nhóm 80-84 năm).
+
+## Quyết định 007: Kiến trúc Dashboard Streamlit và Tuân thủ Pháp lý/Khuyến nghị
+- **Ngày:** 04/11/2026
+- **Bối cảnh:** Cần xây dựng dashboard trực quan cho người dùng cuối nhưng phải tuân thủ nghiêm ngặt các quy định về cảnh báo rủi ro đầu tư và vận hành.
+- **Quyết định:**
+  - Dashboard kết nối trực tiếp đến `data/warehouse/warehouse.duckdb` ở chế độ read-only (`duckdb.connect(..., read_only=True)`).
+  - Tất cả số liệu hiển thị được tính toán trực tiếp từ các bảng fact/marts/analytics trong database, tuyệt đối không hardcode số liệu tĩnh vào code.
+  - Tại trang tra cứu khu vực (`4_Cong_cu_tim_khu.py`), bắt buộc hiển thị thông điệp cảnh báo nổi bật: *"Công cụ chỉ hỗ trợ thu hẹp phạm vi tìm kiếm theo tiêu chí ngân sách và nhu cầu thời hạn; không cấu thành khuyến nghị đầu tư hoặc xếp hạng khu đáng mua."* Tuyệt đối không tạo tính năng xếp hạng "khu đáng mua nhất" hay "điểm đầu tư".
+  - Dashboard không tự nhận là "realtime", ghi rõ chu kỳ cập nhật dữ liệu theo snapshot HDB hàng tháng.
