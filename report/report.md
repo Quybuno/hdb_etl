@@ -39,7 +39,7 @@ Nhà ở HDB tại Singapore được xây dựng và cấp quyền sử dụng 
 
 ### 2.2. Nhóm người dùng mục tiêu
 1. **Người mua nhà cá nhân:** Cần thông tin tham chiếu thực nghiệm về mức chênh lệch giá giữa các dải thời hạn thuê khác nhau để cân nhắc nhu cầu sử dụng thực tế.
-2. **Chuyên viên nghiên cứu thị trường:** Cần chỉ số giá hedonic đã kiểm soát các đặc tính cơ bản của căn hộ qua các năm, đánh giá mức biến động giá trên cùng một rọ đặc tính căn hộ cố định để so sánh với sự thay đổi về cơ cấu giao dịch.
+2. **Chuyên viên nghiên cứu thị trường:** Cần chỉ số giá hedonic đã kiểm soát các đặc tính cơ bản của căn hộ qua các năm, đánh giá mức biến động giá trên cùng một tập đặc tính căn hộ cố định để so sánh với sự thay đổi về cơ cấu giao dịch.
 3. **Cơ quan quản lý dữ liệu:** Cần kiểm tra tính nhất quán và độ ổn định của các chỉ số đo lường kinh tế lượng theo chu kỳ thời gian.
 
 ---
@@ -175,7 +175,7 @@ Dashboard được xây dựng bằng Streamlit, kết nối trực tiếp ở c
 
 #### Q1. Đường cong Thời hạn thuê
 - **Quy mô mẫu:** Giai đoạn 1 (2017–2022) có tối thiểu 5,879 giao dịch/nhóm (nhóm 85–89 năm). Giai đoạn 2 (2023–2026) có tối thiểu 2,591 giao dịch/nhóm (nhóm 80–84 năm). Cả hai đều đạt ngưỡng >= 1,000 giao dịch.
-- **Thứ hạng hệ số:** Hệ số OLS tăng đơn điệu theo thời hạn thuê ở cả hai giai đoạn (Spearman rank correlation = **1.0000**).
+- **Tương quan thứ hạng giữa hai giai đoạn:** Thứ tự hệ số giống nhau giữa hai giai đoạn (hệ số tương quan hạng Spearman = **1.0000**). Quan sát từ bảng hệ số hồi quy cho thấy các hệ số tăng dần theo thời hạn thuê còn lại (giá căn hộ thấp hơn khi thời hạn còn lại ngắn hơn).
 - **Hệ số hồi quy và mức chênh lệch giá so với nhóm 70–74 năm:**
   - Nhóm `< 50 năm`: P1 = -0.3104 log points (-26.68%); P2 = -0.3327 log points (-28.30%).
   - Nhóm `50–54 năm`: P1 = -0.2009 log points (-18.20%); P2 = -0.2107 log points (-19.00%).
@@ -190,7 +190,7 @@ Dashboard được xây dựng bằng Streamlit, kết nối trực tiếp ở c
   - Nhóm `80–84 năm`: Hệ số tăng từ +0.0845 lên +0.1673 log points. Độ chênh lệch đo được là **+0.0828 log points** (tương đương **+9.39 điểm phần trăm** theo chênh lệch phần trăm), vượt ngưỡng quy định 0.05 (5 điểm phần trăm).
   - Nhóm `65–69 năm`: Hệ số thay đổi từ -0.0037 xuống -0.0448 log points. Độ chênh lệch đo được là **-0.0411 log points** (tương đương **-4.01 điểm phần trăm**).
   - Nhóm `90+ năm`: Hệ số thay đổi từ +0.2603 xuống +0.2004 log points. Độ chênh lệch đo được là **-0.0600 log points** (tương đương **-7.55 điểm phần trăm**).
-- **Kết luận:** **Q1 = FAIL**. Về xu hướng tổng thể, kết quả ước lượng cho thấy giá căn hộ nhìn chung thấp hơn khi thời hạn thuê còn lại ngắn hơn (hệ số giảm đơn điệu từ nhóm 90+ năm xuống nhóm < 50 năm, Spearman đạt 1.0000). Tuy nhiên, về tiêu chí độ ổn định cấu trúc theo thời gian, đường cong không đạt yêu cầu do biến động hệ số tại nhóm 80–84 năm vượt ngưỡng khóa 0.05. Báo cáo trung thực số đo thực tế, không suy đoán nguyên nhân khi không có dữ liệu chứng minh.
+- **Kết luận:** **Q1 = FAIL**. Từ bảng hệ số hồi quy, giá căn hộ nhìn chung thấp hơn khi thời hạn thuê còn lại ngắn hơn (các hệ số tăng dần theo thời hạn thuê còn lại từ nhóm < 50 năm lên nhóm 90+ năm). Thứ tự hệ số giống nhau giữa hai giai đoạn (hệ số tương quan hạng Spearman = 1.0000). Tuy nhiên, về tiêu chí độ ổn định cấu trúc theo thời gian, đường cong không đạt yêu cầu do biến động hệ số tại nhóm 80–84 năm vượt ngưỡng khóa 0.05. Báo cáo trung thực số đo thực tế, không suy đoán nguyên nhân khi không có dữ liệu chứng minh.
 
 #### Q2. Mức Chênh lệch Thời hạn theo Khu vực (Town Lease Gap)
 - **Số khu vực đủ điều kiện (>= 200 giao dịch mỗi nhóm cả 2 thời kỳ):** Đạt **13 khu vực** (ngưỡng >= 10 khu).
@@ -241,7 +241,7 @@ Dashboard được xây dựng bằng Streamlit, kết nối trực tiếp ở c
 
 - **Đo lường biến động cơ cấu và thời hạn thuê (2020–2026):**
   - Trong giai đoạn 2020–2021, thời hạn thuê trung bình của các căn hộ giao dịch tăng nhẹ từ 74.5 năm (năm 2019) lên 75.3–75.4 năm (do gia tăng tỷ lệ căn hộ có thời hạn dài giao dịch), đồng thời tỷ trọng căn hộ 5-Room tăng lên 25.6%–26.8% (so với 24.5% năm 2019), diện tích trung bình tăng lên 97.6–98.2 m² và tầng trung bình tăng lên 8.6–9.0. Sự dịch chuyển cơ cấu căn hộ này diễn ra cùng lúc với việc chỉ số giá thô tăng nhanh hơn chỉ số Hedonic (năm 2020 cao hơn +3.14 điểm; năm 2021 cao hơn +5.43 điểm; năm 2022 cao hơn +2.61 điểm).
-  - Ngược lại, từ sau năm 2021 đến thời điểm 04/11/2026, thời hạn thuê trung bình của các căn hộ giao dịch có xu hướng suy giảm rõ rệt từ 75.4 năm xuống 71.9 năm (-3.5 năm), phản ánh lượng căn hộ có thời hạn thuê thấp hơn tham gia vào rọ giao dịch thực tế trên thị trường ngày càng tăng.
+  - Ngược lại, từ sau năm 2021 đến thời điểm 04/11/2026, thời hạn thuê trung bình của các căn hộ trong tập giao dịch thực tế giảm từ 75.4 năm xuống 71.9 năm (-3.5 năm so với năm 2021).
 - **Kết luận:** **Q3 = PASS**.
 
 #### Q4. Kết quả Thực tế từ Bộ lọc Tìm kiếm (Dữ liệu 12 Tháng Gần nhất)
@@ -270,8 +270,8 @@ Kết quả ghi nhận **14 khu vực hành chính** thỏa mãn tiêu chí, tr�
 
 ### 9.2. Diễn giải (Cách hiểu Có điều kiện)
 
-1. **Về sự thay đổi ở Q1:** Đường cong chiết khấu thời hạn thuê không giữ được tính ổn định qua thời gian do sự thay đổi hệ số tại nhóm 80–84 năm (tăng 0.0828 log points giữa hai thời kỳ). Điều này cho thấy mức định giá của thị trường đối với nhóm thời hạn này có sự dịch chuyển giữa giai đoạn 2017–2022 và giai đoạn sau năm 2022.
-2. **Về phân hóa theo khu vực (Q2):** Mức chênh lệch giá giữa nhóm 55–65 năm và nhóm 70–80 năm có sự khác nhau giữa 13 khu vực. Tại một số khu vực như Toa Payoh, Geylang, Bukit Merah, mức chênh lệch ghi nhận từ -14% đến -24%; trong khi tại Hougang, Jurong West, Tampines, mức chênh lệch ghi nhận dưới -8%.
+1. **Về sự thay đổi ở Q1:** Đường cong chiết khấu thời hạn thuê không giữ được tính ổn định qua thời gian do sự thay đổi hệ số tại nhóm 80–84 năm (tăng 0.0828 log points giữa hai thời kỳ). Điều này cho thấy hệ số khác nhau giữa hai giai đoạn, nguyên nhân chưa xác định.
+2. **Về phân hóa theo khu vực (Q2):** Mức chênh lệch giá giữa nhóm 55–65 năm và nhóm 70–80 năm có sự khác nhau giữa 13 khu vực. Tại một số khu vực như Toa Payoh, Geylang, Bukit Merah, mức chênh lệch ghi nhận từ -14% đến -24%; trong khi tại Hougang, Jurong West, Tampines, mức chênh lệch ghi nhận trong khoảng từ +1% đến −8%.
 3. **Về chênh lệch giữa giá thô và Hedonic (Q3):** Việc giá thô tăng nhanh hơn chỉ số Hedonic trong giai đoạn 2020–2021 diễn ra cùng lúc với thay đổi cơ cấu căn hộ giao dịch (gia tăng tỷ trọng căn hộ 5-Room, tăng diện tích trung bình và tăng nhẹ thời hạn thuê trung bình). Khi cơ cấu giao dịch dịch chuyển sang các căn hộ có quy mô lớn hơn, giá trung vị thô phản ánh đồng thời cả biến động giá lẫn sự thay đổi giỏ hàng giao dịch.
 
 ---
@@ -323,9 +323,9 @@ Hệ thống đã được thiết lập tác vụ tự động hóa qua Windows
 
 Dự án đã thiết lập quy trình ELT từ khâu trích xuất dữ liệu trên data.gov.sg, chuyển đổi qua dbt, kiểm định chất lượng và phục vụ dashboard:
 
-- **Q1 (FAIL):** Mô hình ghi nhận xu hướng giá căn hộ nhìn chung thấp hơn khi thời hạn thuê còn lại ngắn hơn (hệ số giảm đơn điệu với Spearman = 1.0 qua các dải từ 90+ năm đến 50–54 năm). Tuy nhiên, về tiêu chí độ ổn định cấu trúc giữa hai thời kỳ, độ chênh lệch ở nhóm 80–84 năm đo được là **0,0828 log points** (tương đương **9,39 điểm phần trăm**), vượt ngưỡng quy định 0.05 (5 điểm phần trăm). Giữ nguyên kết luận FAIL theo quy tắc đã khóa.
+- **Q1 (FAIL):** Từ bảng hệ số hồi quy, giá căn hộ nhìn chung thấp hơn khi thời hạn thuê còn lại ngắn hơn (các hệ số tăng dần theo thời hạn thuê còn lại từ nhóm < 50 năm lên nhóm 90+ năm). Hệ số tương quan hạng Spearman đạt 1.0 thể hiện thứ tự hệ số giống nhau giữa hai giai đoạn. Tuy nhiên, về tiêu chí độ ổn định cấu trúc giữa hai thời kỳ, độ chênh lệch ở nhóm 80–84 năm đo được là **0,0828 log points** (tương đương **9,39 điểm phần trăm**), vượt ngưỡng quy định 0.05 (5 điểm phần trăm). Giữ nguyên kết luận FAIL theo quy tắc đã khóa.
 - **Q2 (PASS):** Mức chênh lệch giá giữa nhóm 55–65 năm và nhóm 70–80 năm có sự khác biệt giữa 13 khu vực đủ điều kiện (Spearman thứ hạng = 0.6209). Kiểm tra độ nhạy Leave-One-Out ghi nhận khoảng dao động từ 0.5524 đến 0.6993, trong đó có 6/13 lần rơi xuống dưới 0.60. Nhóm phân loại Mature / Non-Mature theo HDB là phân loại mô tả, chưa kiểm định thống kê riêng biệt.
-- **Q3 (PASS):** Chuỗi chỉ số Hedonic đã kiểm soát thành phần căn hộ từ năm gốc 2019 đến năm đầy đủ 2025 (+58.87% so với mức tăng thô +57.00%), cho thấy sự khác biệt về tốc độ tăng giá so với giá thô khi cơ cấu giao dịch dịch chuyển sang các căn hộ diện tích lớn hơn và thời hạn thuê dài hơn trong giai đoạn 2020–2021.
+- **Q3 (PASS):** Chuỗi chỉ số Hedonic đã kiểm soát thành phần căn hộ từ năm gốc 2019 đến năm đầy đủ 2025 (+58.87% so với mức tăng thô +57.00%). Trong giai đoạn 2020–2021, chỉ số giá thô tăng nhanh hơn chỉ số Hedonic, đồng thời ghi nhận sự thay đổi cơ cấu giao dịch với tỷ trọng căn hộ diện tích lớn hơn và thời hạn thuê dài hơn.
 - **Q4 (HOẠT ĐỘNG):** Công cụ tìm kiếm hỗ trợ lọc dữ liệu giao dịch 12 tháng gần nhất theo ngân sách, thời hạn thuê và cự ly MRT, hiển thị 14 khu vực thỏa mãn mà không xếp hạng.
 
 ---
