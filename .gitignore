@@ -30,3 +30,4 @@ dbt_hdb/logs/
 
 # Streamlit
 .streamlit/
+

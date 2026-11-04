@@ -176,3 +176,4 @@ st.warning("""
 - Khoảng cách đến MRT và CBD được đo đạc theo đường thẳng (Haversine), có thể chênh lệch với khoảng cách đi bộ hoặc lộ trình giao thông thực tế.  
 - Không tạo điểm số "đáng mua nhất" để tránh rủi ro định hướng sai lệch cho người dùng.
 """)
+

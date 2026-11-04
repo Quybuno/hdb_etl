@@ -106,3 +106,4 @@ hdb_elt/
 - Mạng lưới MRT áp dụng là mạng lưới hiện hành, không phản ánh động lịch sử mở ga mới.
 - Kết quả thống kê chỉ thể hiện mối tương quan có điều kiện (conditional correlation), không hàm ý quan hệ nhân quả.
 - Dự án không cung cấp khuyến nghị đầu tư hoặc định giá căn hộ cá lẻ.
+

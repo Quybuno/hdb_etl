@@ -79,3 +79,4 @@ select
     end as mrt_band
 from cross_calc
 where rank_mrt = 1
+

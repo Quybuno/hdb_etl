@@ -14,3 +14,4 @@ select
         else 'STALE_WARNING'
     end as freshness_status
 from max_m
+

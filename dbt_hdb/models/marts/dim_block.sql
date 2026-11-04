@@ -31,3 +31,4 @@ distinct_blocks as (
 
 select * from distinct_blocks
 order by town, street_name, block
+

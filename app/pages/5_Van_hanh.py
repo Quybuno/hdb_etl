@@ -115,3 +115,4 @@ st.warning("""
 - Hệ thống thực thi theo cơ chế lô (batch), không giám sát streaming theo từng giây.  
 - Các chỉ số cảnh báo (như tỷ lệ dòng trùng lặp 0.13%) không chặn quy trình xuất bản nhưng đòi hỏi người phân tích lưu ý khi giải thích kết quả.
 """)
+

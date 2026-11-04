@@ -142,3 +142,4 @@ if __name__ == "__main__":
     print("Q2 Status:", res["status"])
     print("Q2 Criteria:", res["criteria"])
     print("Qualifying Towns:", res["qualifying_towns_count"])
+

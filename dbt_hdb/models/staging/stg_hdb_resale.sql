@@ -62,3 +62,4 @@ select
     try_cast(trim(resale_price) as double) as resale_price,
     source_row_number
 from raw_trimmed
+

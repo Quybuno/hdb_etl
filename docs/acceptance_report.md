@@ -173,3 +173,4 @@ Toàn bộ 6 ảnh màn hình được chụp tự động ở độ phân giả
 - **Chỉ số Giá Điều chỉnh (Q3):** `docs/screenshots/price_index.png`
 - **Công cụ Tìm Khu vực (Q4):** `docs/screenshots/budget_search.png`
 - **Giám sát Vận hành & Quality Gate:** `docs/screenshots/operations_quality.png`
+

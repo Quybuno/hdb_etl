@@ -157,3 +157,4 @@ if __name__ == "__main__":
     run_id = str(uuid.uuid4())
     run_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     extract_hdb(run_id, run_date)
+

@@ -124,3 +124,4 @@ st.warning("""
 - Chỉ số mô tả biến động danh nghĩa bằng SGD, chưa khấu trừ lạm phát chung của nền kinh tế (CPI).  
 - Mô hình kiểm soát các biến quan sát được trong dữ liệu công khai (diện tích, tầng, khu, thời hạn thuê, loại căn); các yếu tố nội thất cao cấp của từng giao dịch cá biệt không nằm trong phạm vi kiểm soát.
 """)
+

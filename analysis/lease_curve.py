@@ -177,3 +177,4 @@ if __name__ == "__main__":
     res = run_q1_lease_curve("data/warehouse/warehouse_staging.duckdb")
     print("Q1 Status:", res["status"])
     print("Q1 Criteria:", res["criteria"])
+

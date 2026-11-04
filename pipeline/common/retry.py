@@ -69,3 +69,4 @@ def fetch_with_retry(
                 if logger:
                     logger.error(f"Failed to fetch {url} after {max_retries} retries: {e}")
                 raise e
+

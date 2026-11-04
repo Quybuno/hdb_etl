@@ -50,3 +50,4 @@ group by
     cbd_distance_km,
     block_latitude,
     block_longitude
+

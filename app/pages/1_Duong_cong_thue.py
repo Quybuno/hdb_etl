@@ -110,3 +110,4 @@ st.warning("""
 - **Nhóm 90+ năm:** Chênh lệch giá cao (+20% đến +30%) phản ánh sự kết hợp giữa thời hạn thuê dài và hiệu ứng căn hộ hiện đại vừa hoàn thành thời hạn MOP 5 năm (tiện ích và thiết kế mới).  
 - **Tương quan không phải nhân quả:** Đường cong phản ánh mức giá giao dịch thực tế trên thị trường, không hàm ý giá giảm thuần túy do hiệu ứng thời gian cơ học.
 """)
+

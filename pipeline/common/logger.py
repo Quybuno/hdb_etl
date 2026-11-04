@@ -26,3 +26,4 @@ def setup_logger(name: str = "pipeline", log_dir: str = "logs") -> logging.Logge
     logger.addHandler(ch)
 
     return logger
+

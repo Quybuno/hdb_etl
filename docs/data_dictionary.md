@@ -118,3 +118,4 @@ Kết hợp giao dịch `int_resale_parsed` với vị trí địa lý và kho�
 - `ops.snapshot_delta`: Biến động số dòng giữa hai snapshot liên tiếp.
 - `ops.quality_result`: Kết quả kiểm tra của bộ kiểm soát chất lượng (Quality Gate).
 - `ops.source_freshness`: Độ trễ của dữ liệu nguồn so với ngày chạy hiện tại.
+

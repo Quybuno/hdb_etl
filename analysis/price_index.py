@@ -140,3 +140,4 @@ if __name__ == "__main__":
     res = run_q3_price_index("data/warehouse/warehouse_staging.duckdb")
     print("Q3 Status:", res["status"])
     print("Q3 Criteria:", res["criteria"])
+

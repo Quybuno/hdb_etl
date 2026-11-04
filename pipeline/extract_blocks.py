@@ -201,3 +201,4 @@ def extract_blocks(
 
 if __name__ == "__main__":
     extract_blocks()
+

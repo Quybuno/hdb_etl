@@ -22,3 +22,4 @@ group by
     transaction_month_num,
     flat_type,
     lease_band_5yr
+

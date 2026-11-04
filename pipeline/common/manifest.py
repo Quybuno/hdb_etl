@@ -27,3 +27,4 @@ def write_manifest(output_dir: str, manifest_data: Dict[str, Any]) -> str:
     with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(manifest_data, f, indent=2)
     return manifest_path
+

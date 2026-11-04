@@ -19,3 +19,4 @@ select
     end as flat_type_rank
 from distinct_flat_types
 order by flat_type_rank
+

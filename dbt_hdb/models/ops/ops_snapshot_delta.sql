@@ -27,3 +27,4 @@ select
         else round((row_count - prev_row_count) * 100.0 / prev_row_count, 2)
     end as delta_pct
 from ranked
+

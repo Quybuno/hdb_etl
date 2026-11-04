@@ -28,3 +28,4 @@ select
     ) as year_quarter
 from distinct_months
 order by month
+

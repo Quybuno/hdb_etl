@@ -30,3 +30,4 @@ select
     cbd_distance_km,
     source_row_number
 from {{ ref('int_resale_enriched') }}
+

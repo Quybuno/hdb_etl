@@ -10,3 +10,4 @@ select
     trim(match) as match_type
 from raw.block_coordinates
 where lat is not null and lon is not null
+

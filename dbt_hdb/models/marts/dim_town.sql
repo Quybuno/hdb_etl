@@ -18,3 +18,4 @@ select
     end as estate_type
 from distinct_towns
 order by town
+

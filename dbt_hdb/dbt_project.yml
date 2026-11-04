@@ -29,3 +29,4 @@ models:
     ops:
       +schema: ops
       +materialized: table
+

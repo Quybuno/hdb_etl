@@ -26,3 +26,4 @@ def test_manifest_write_and_read(tmp_path):
     assert loaded["run_id"] == "test_1"
     assert loaded["status"] == "success"
     assert loaded["sha256"] == "abcdef123456"
+

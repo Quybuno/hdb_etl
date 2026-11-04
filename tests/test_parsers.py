@@ -36,3 +36,4 @@ def test_transaction_sk_uniqueness():
     sk1_occ1 = hashlib.sha256(f"{hash1}||1".encode()).hexdigest()
     sk1_occ2 = hashlib.sha256(f"{hash1}||2".encode()).hexdigest()
     assert sk1_occ1 != sk1_occ2
+

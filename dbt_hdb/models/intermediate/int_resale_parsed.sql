@@ -65,3 +65,4 @@ select
         else '90+'
     end as lease_band_5yr
 from parsed
+

@@ -5,3 +5,4 @@ dbt_hdb:
       type: duckdb
       path: "../data/warehouse/warehouse_staging.duckdb"
       threads: 4
+

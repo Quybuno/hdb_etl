@@ -28,3 +28,4 @@ res2 = subprocess.run([sys.executable, "-m", "pip", "install", "dbt-duckdb"], ca
 print("dbt-duckdb return code:", res2.returncode)
 print("dbt-duckdb stdout:", res2.stdout[-500:] if res2.stdout else "")
 print("dbt-duckdb stderr:", res2.stderr[-500:] if res2.stderr else "")
+

@@ -51,3 +51,4 @@ def publish_warehouse(
 
 if __name__ == "__main__":
     publish_warehouse("data/warehouse/warehouse_staging.duckdb", "data/warehouse/warehouse.duckdb", True)
+

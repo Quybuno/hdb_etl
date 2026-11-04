@@ -25,3 +25,4 @@ def query_df(sql: str, params: tuple = None) -> pd.DataFrame:
 def get_latest_data_date() -> str:
     df = query_df("SELECT max(month) as latest_month FROM main_marts.fct_resale_transaction")
     return str(df["latest_month"].iloc[0]) if not df.empty else "N/A"
+

@@ -23,3 +23,4 @@ from resale r
 left join geo g
     on r.block = g.block
     and r.street_name = g.street_name
+
