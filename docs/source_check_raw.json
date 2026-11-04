@@ -1,0 +1,50 @@
+{
+  "hdb": {
+    "status": "success",
+    "initiate_status": 201,
+    "initiate_latency_s": 0.25,
+    "poll_status": 201,
+    "poll_count": 1,
+    "download_latency_s": 4.17,
+    "sha256": "59115752e6b8430545ea0814557678df7fd0514bbaba828b379a33855cb533f6",
+    "columns": [
+      "month",
+      "town",
+      "flat_type",
+      "block",
+      "street_name",
+      "storey_range",
+      "floor_area_sqm",
+      "flat_model",
+      "lease_commence_date",
+      "remaining_lease",
+      "resale_price"
+    ],
+    "column_count": 11,
+    "row_count": 244119,
+    "min_month": "2017-01",
+    "max_month": "2026-11",
+    "csv_size_bytes": 24149037
+  },
+  "mrt": {
+    "status": "success",
+    "initiate_status": 201,
+    "poll_status": 201,
+    "data_status": null,
+    "download_url_present": true,
+    "size_bytes": 213480,
+    "sha256": "7a57cb14cf7c621203938e944f99b41891284e5e67876c43d9f8f3ee3aa88ee6"
+  },
+  "nus3d": {
+    "status": "success",
+    "http_status": 200,
+    "latency_s": 0.46,
+    "license_mention": false
+  },
+  "onemap": {
+    "status": "success",
+    "http_status": 200,
+    "latency_s": 0.19,
+    "results_found": 5
+  }
+}

@@ -1,0 +1,32 @@
+# Environment
+.env
+.venv/
+venv/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pytest_cache/
+.coverage
+htmlcov/
+
+# Data and DuckDB
+data/raw/
+data/warehouse/
+*.duckdb
+*.duckdb.tmp*
+*.duckdb.wal
+
+# Logs
+logs/
+*.log
+
+# dbt
+dbt_hdb/target/
+dbt_hdb/dbt_packages/
+dbt_hdb/logs/
+
+# Streamlit
+.streamlit/
