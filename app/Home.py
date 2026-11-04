@@ -39,7 +39,11 @@ try:
         SELECT
             count(*) as recent_tx,
             median(resale_price) as recent_median_price
-        FROM main_marts.mart_budget_search;
+        FROM main_marts.fct_resale_transaction
+        WHERE month >= (
+            SELECT strftime(max(strptime(month || '-01', '%Y-%m-%d')) - interval 11 month, '%Y-%m')
+            FROM main_marts.fct_resale_transaction
+        );
     """)
 
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -153,3 +157,4 @@ st.warning("""
 - Giá chưa điều chỉnh lạm phát và các yếu tố nội thất riêng lẻ của từng căn hộ.  
 - Số liệu trung vị thô có thể bị ảnh hưởng bởi tỷ trọng căn hộ mới (MOP) bán ra trong từng thời kỳ. Không dùng để định giá một căn cụ thể.
 """)
+

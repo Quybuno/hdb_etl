@@ -2,6 +2,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
+import numpy as np
 from db import query_df, get_latest_data_date
 
 st.set_page_config(page_title="So sánh chênh lệch giá theo khu", page_icon="🗺️", layout="wide")
@@ -50,8 +51,8 @@ else:
         error_y=dict(
             type='data',
             symmetric=False,
-            array=(np_exp_upper := (pd.np.exp(sub["ci_upper"]) - 1.0) * 100 - sub["pct_gap"]) if hasattr(pd, 'np') else None,
-            arrayminus=(sub["pct_gap"] - (pd.np.exp(sub["ci_lower"]) - 1.0) * 100) if hasattr(pd, 'np') else None
+            array=((np.exp(sub["ci_upper"]) - 1.0) * 100 - sub["pct_gap"]).clip(lower=0),
+            arrayminus=(sub["pct_gap"] - (np.exp(sub["ci_lower"]) - 1.0) * 100).clip(lower=0)
         ),
         marker_color="#2ca02c",
         name="Chiết khấu (%)"
@@ -93,3 +94,4 @@ st.warning("""
 - **Không xếp hạng "đáng mua":** Mức chiết khấu lớn tại một số khu vực không đồng nghĩa với việc khu đó "đáng mua hơn". Giá phản ánh tổng hòa của vị trí, cơ sở hạ tầng, mật độ dân cư và nhu cầu thực tế.  
 - Chỉ bao gồm 13 khu vực có đủ thanh khoản giao dịch ở cả hai nhóm thời hạn và hai thời kỳ.
 """)
+
