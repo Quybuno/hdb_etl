@@ -2,32 +2,32 @@
 
 > **Dự án:** Hệ thống ELT và Dashboard phân tích giá căn hộ HDB Singapore theo thời hạn thuê còn lại  
 > **Thời điểm cập nhật:** 04/11/2026  
-> **Trạng thái:** DỪNG TRƯỚC GIAI ĐOẠN 6 (Đã hoàn thành Giai đoạn 0 đến Giai đoạn 5)  
+> **Trạng thái:** ĐANG THEO DÕI GIAI ĐOẠN 6  
 > **Môi trường thực thi:** Windows 10/11, PowerShell, Python 3.12, DuckDB, dbt-duckdb, Streamlit  
-> **Người thực hiện:** Kỹ sư Dữ liệu (Data Engineer)  
+> **Người thực hiện:** [TÊN SINH VIÊN] (Data Engineer)  
 
 ---
 
 ## 1. Bảng Đánh giá Tiêu chí Nghiệm thu (Theo Mục 15 Đặc tả)
 
-| STT | Tiêu chí nghiệm thu (Mục 15) | Trạng thái | Bằng chứng / Đường dẫn file / Số test | Ghi chú kỹ thuật |
-|:---:|---|:---:|---|---|
-| 1 | **Giai đoạn 0 đạt** | **ĐẠT** | Báo cáo: [docs/source_check.md](file:///d:/video/hdb_elt/docs/source_check.md)<br>Dữ liệu đo: [docs/source_check_raw.json](file:///d:/video/hdb_elt/docs/source_check_raw.json) | 244,119 dòng HDB, đủ 11 cột, max(month)=2026-11, SHA-256 xác thực. Đủ thông tin giấy phép Open Data Licence. |
-| 2 | **`python pipeline/run_pipeline.py` chạy từ đầu đến cuối** | **ĐẠT** | File thực thi: [pipeline/run_pipeline.py](file:///d:/video/hdb_elt/pipeline/run_pipeline.py)<br>Phiên chạy: `run_id=d6848d4e-8039-4ecf-9470-6975e372c3a2` | Hoàn tất 8 bước liên hoàn từ trích xuất, nạp dữ liệu, dbt build, phân tích, quality gate đến xuất bản. Mã thoát 0. |
-| 3 | **Raw được lưu theo từng lần chạy và có manifest** | **ĐẠT** | Thư mục: `data/raw/hdb_resale/run_date=2026-11-04/`<br>Metadata: [manifest.json](file:///d:/video/hdb_elt/data/raw/hdb_resale/run_date=2026-11-04/run_id=aa50ca00-8d79-4ba6-9762-5d8e2e6b9780/manifest.json) | Lưu trữ bất biến kèm đầy đủ trường metadata: run_id, timestamp, SHA-256, row_count, byte_size, columns, status. |
-| 4 | **Chạy lại không tạo dữ liệu trùng** | **ĐẠT** | Kịch bản: [pipeline/extract_hdb.py](file:///d:/video/hdb_elt/pipeline/extract_hdb.py)<br>Manifest Run 2: `status: no_change` | So sánh SHA-256 với snapshot trước; bảng fact sử dụng `occurrence_no` và `transaction_sk` định danh riêng cho từng dòng. |
-| 5 | **`dbt build` thành công** | **ĐẠT** | Thư mục mô hình: [dbt_hdb/models/](file:///d:/video/hdb_elt/dbt_hdb/models/)<br>Kết quả: 16 models, 24 data tests | PASS 16/16 models (11 bảng, 5 view) trong 7.59s; PASS 24/24 data tests (uniqueness, not null, relationships, accepted_values, domain tests) trong 2.57s. |
-| 6 | **pytest thành công** | **ĐẠT** | Thư mục kiểm thử: [tests/](file:///d:/video/hdb_elt/tests/)<br>Kết quả: **10/10 tests PASS** | PASS 100% trong 3.13s (kiểm thử parser, manifest, quality gate, đối chiếu raw-fact, tính bất biến hash, cơ chế retry publish khi file bị khóa). |
-| 7 | **Quality Gate chặn được file lỗi trong kiểm thử** | **ĐẠT** | File test: [tests/test_quality_gate.py](file:///d:/video/hdb_elt/tests/test_quality_gate.py) | Kiểm thử thành công 3 tình huống lỗi: (1) Thiếu cột, (2) File rỗng 0 byte, (3) Số dòng giảm > 1%. |
-| 8 | **Publish giữ dashboard ở phiên bản tốt gần nhất khi lỗi** | **ĐẠT** | Module: [pipeline/publish.py](file:///d:/video/hdb_elt/pipeline/publish.py)<br>File test: `tests/test_quality_gate.py` | Kiểm thử xác nhận file `warehouse.duckdb` có mã hash SHA-256 trước và sau lần xuất bản lỗi trùng khớp hoàn toàn. Bổ sung cơ chế retry 5 lần (1.0s) khi Windows giữ kết nối đọc; nếu file vẫn khóa, giữ nguyên kho cũ và trả về FAILED an toàn mà không đóng tiến trình dashboard. |
-| 9 | **Q1 đạt (Đường cong thời hạn thuê ổn định)** | **CHƯA ĐẠT**<br>*(FAIL)* | Kết quả: [docs/analysis_results.md](file:///d:/video/hdb_elt/docs/analysis_results.md)<br>Quy tắc: [config/analysis_rules.yml](file:///d:/video/hdb_elt/config/analysis_rules.yml) | Mẫu đạt, Spearman đạt 1.0, nhưng sai khác giữa 2 thời kỳ ở nhóm 80-84 năm là 0.0828 log points (9.39 điểm phần trăm) > ngưỡng khóa 0.05. Báo cáo trung thực Q1 = FAIL. |
-| 10 | **Ít nhất một trong Q2 hoặc Q3 đạt** | **ĐẠT**<br>*(Cả 2 đều ĐẠT)* | Bảng dữ liệu: `analytics.town_lease_gap`<br>Bảng dữ liệu: `analytics.price_index` | **Q2 ĐẠT:** 13 khu vực đủ điều kiện (ngưỡng >= 10), Spearman thứ hạng 0.6209 (ngưỡng >= 0.60).<br>**Q3 ĐẠT:** Đủ 10 năm liên tục từ 2017 đến 2026 cho 3 loại căn kèm 95% CI cụm block. |
-| 11 | **Q4 hoạt động với bộ lọc và không có điểm "đáng mua"** | **ĐẠT** | Trang mã nguồn: [app/pages/4_Cong_cu_tim_khu.py](file:///d:/video/hdb_elt/app/pages/4_Cong_cu_tim_khu.py)<br>Ảnh màn hình: [docs/screenshots/budget_search.png](file:///d:/video/hdb_elt/docs/screenshots/budget_search.png) | Lọc theo Ngân sách, Loại căn, Thời hạn tối thiểu, Cự ly MRT. Có cảnh báo bắt buộc, ẩn khu vực dưới 10 giao dịch, không tạo điểm số hay xếp hạng "đáng mua". |
-| 12 | **Dashboard đọc dữ liệu thật và có trang vận hành** | **ĐẠT** | Ứng dụng: [app/Home.py](file:///d:/video/hdb_elt/app/Home.py)<br>Trang vận hành: [app/pages/5_Van_hanh.py](file:///d:/video/hdb_elt/app/pages/5_Van_hanh.py) | Đọc trực tiếp từ kho `warehouse.duckdb` (244,119 dòng fact). Trang vận hành hiển thị lịch sử nạp dữ liệu và chi tiết 12 quy tắc Quality Gate. |
-| 13 | **Có ít nhất 7 lần chạy theo lịch, kể cả lần `no_change`** | **ĐANG THEO DÕI**<br>*(1/7 lần)* | Kịch bản: [scripts/register_task.ps1](file:///d:/video/hdb_elt/scripts/register_task.ps1)<br>Lịch sử: [logs/scheduler/schedule_history.json](file:///d:/video/hdb_elt/logs/scheduler/schedule_history.json) | Đã đăng ký tác vụ `HDB_ELT_Daily_Run` trên Windows Task Scheduler chạy hàng ngày lúc 08:15 AM (Next Run: 05/11/2026 08:15 AM, Status: Ready). Đã chạy thử nghiệm thành công phiên đầu tiên (ExitCode: 0, log: `logs/scheduler/run_20261104_170831.log`, trạng thái HDB: `no_change`). Đang chờ tích lũy đủ 7 phiên chạy hằng ngày theo lịch. |
-| 14 | **README cho phép người khác chạy lại** | **ĐẠT** | Hướng dẫn: [README.md](file:///d:/video/hdb_elt/README.md) | Cung cấp đầy đủ hướng dẫn thiết lập môi trường ảo, cài đặt package, thực thi pipeline, chạy dbt test, pytest và chạy Streamlit. |
-| 15 | **Báo cáo có giới hạn và nguồn dữ liệu** | **ĐẠT** | Báo cáo hoàn chỉnh: [report/report.md](file:///d:/video/hdb_elt/report/report.md) | Cấu trúc đầy đủ 13 phần theo mục 13 đặc tả, bao gồm đầy đủ 11 giới hạn bắt buộc theo mục 14. |
-| 16 | **Không có token hoặc dữ liệu raw lớn trong Git** | **ĐẠT** | Cấu hình: [.gitignore](file:///d:/video/hdb_elt/.gitignore)<br>Kiểm tra `git status` | Git đã bỏ qua: `data/raw/`, `data/warehouse/`, `logs/`, `.env`. Không chứa bất kỳ token, secret, API key hay thông tin cá nhân nào. |
+| STT | Tiêu chí nghiệm thu (Mục 15) | Lần chạy dự kiến | Kết quả thực tế | Trạng thái | Bằng chứng / Đường dẫn file / Số test | Ghi chú kỹ thuật |
+|:---:|---|---|---|:---:|---|---|
+| 1 | **Giai đoạn 0 đạt** | 1 lần kiểm tra nguồn | Đạt 100% (244,119 dòng, 11 cột, giấy phép ODL/MIT) | **ĐẠT** | Báo cáo: [docs/source_check.md](file:///d:/video/hdb_elt/docs/source_check.md)<br>Dữ liệu đo: [docs/source_check_raw.json](file:///d:/video/hdb_elt/docs/source_check_raw.json) | 244,119 dòng HDB, đủ 11 cột, max(month)=2026-11, SHA-256 xác thực. Đủ thông tin giấy phép Open Data Licence. |
+| 2 | **`python pipeline/run_pipeline.py` chạy từ đầu đến cuối** | 1 lần toàn trình | Hoàn thành 8/8 bước, ExitCode: 0 | **ĐẠT** | File thực thi: [pipeline/run_pipeline.py](file:///d:/video/hdb_elt/pipeline/run_pipeline.py)<br>Phiên chạy: `run_id=d6848d4e-8039-4ecf-9470-6975e372c3a2` | Hoàn tất 8 bước liên hoàn từ trích xuất, nạp dữ liệu, dbt build, phân tích, quality gate đến xuất bản. Mã thoát 0. |
+| 3 | **Raw được lưu theo từng lần chạy và có manifest** | Mỗi lần chạy 1 manifest | 2 manifest hợp lệ (`aa50ca00`, `b03e33d5`) | **ĐẠT** | Thư mục: `data/raw/hdb_resale/run_date=2026-11-04/`<br>Metadata: [manifest.json](file:///d:/video/hdb_elt/data/raw/hdb_resale/run_date=2026-11-04/run_id=aa50ca00-8d79-4ba6-9762-5d8e2e6b9780/manifest.json) | Lưu trữ bất biến kèm đầy đủ trường metadata: run_id, timestamp, SHA-256, row_count, byte_size, columns, status. |
+| 4 | **Chạy lại không tạo dữ liệu trùng** | 1 lần chạy lặp | Ghi nhận status: `no_change`, không nhân bản file | **ĐẠT** | Kịch bản: [pipeline/extract_hdb.py](file:///d:/video/hdb_elt/pipeline/extract_hdb.py)<br>Manifest Run 2: `status: no_change` | So sánh SHA-256 với snapshot trước; bảng fact sử dụng `occurrence_no` và `transaction_sk` định danh riêng cho từng dòng. |
+| 5 | **`dbt build` thành công** | 1 lần build toàn bộ | PASS 16/16 models, PASS 24/24 data tests | **ĐẠT** | Thư mục mô hình: [dbt_hdb/models/](file:///d:/video/hdb_elt/dbt_hdb/models/)<br>Kết quả: 16 models, 24 data tests | PASS 16/16 models (11 bảng, 5 view) trong 7.59s; PASS 24/24 data tests (uniqueness, not null, relationships, accepted_values, domain tests) trong 1.99s. |
+| 6 | **pytest thành công** | 1 bộ test hồi quy | **11/11 tests PASS (100%)** | **ĐẠT** | Thư mục kiểm thử: [tests/](file:///d:/video/hdb_elt/tests/)<br>Kết quả: **11/11 tests PASS** | PASS 100% trong 3.60s từ log thực tế (kiểm thử parser, manifest, quality gate, đối chiếu raw-fact, tính bất biến hash, cơ chế retry publish khi file bị khóa). |
+| 7 | **Quality Gate chặn được file lỗi trong kiểm thử** | 3 tình huống lỗi | Chặn thành công cả 3 tình huống | **ĐẠT** | File test: [tests/test_quality_gate.py](file:///d:/video/hdb_elt/tests/test_quality_gate.py) | Kiểm thử thành công 3 tình huống lỗi: (1) Thiếu cột, (2) File rỗng 0 byte, (3) Số dòng giảm > 1%. |
+| 8 | **Publish giữ dashboard ở phiên bản tốt gần nhất khi lỗi** | 2 kịch bản (lỗi dữ liệu & khóa file) | Giữ nguyên mã hash SHA-256 của `warehouse.duckdb` | **ĐẠT** | Module: [pipeline/publish.py](file:///d:/video/hdb_elt/pipeline/publish.py)<br>File test: `tests/test_quality_gate.py` | Kiểm thử xác nhận file `warehouse.duckdb` có mã hash SHA-256 trước và sau lần xuất bản lỗi trùng khớp hoàn toàn. Bổ sung cơ chế retry 5 lần (1.0s) khi Windows giữ kết nối đọc; nếu file vẫn khóa, giữ nguyên kho cũ và trả về FAILED an toàn mà không đóng tiến trình dashboard. |
+| 9 | **Q1 đạt (Đường cong thời hạn thuê ổn định)** | 1 phân tích mô hình Hedonic | Spearman 1.0, nhưng lệch nhóm 80-84 năm = 0.0828 log points (> 0.05) | **CHƯA ĐẠT**<br>*(FAIL)* | Kết quả: [docs/analysis_results.md](file:///d:/video/hdb_elt/docs/analysis_results.md)<br>Quy tắc: [config/analysis_rules.yml](file:///d:/video/hdb_elt/config/analysis_rules.yml) | Mẫu đạt, Spearman đạt 1.0, nhưng sai khác giữa 2 thời kỳ ở nhóm 80-84 năm là 0.0828 log points (9.39 điểm phần trăm) > ngưỡng khóa 0.05. Báo cáo trung thực Q1 = FAIL. |
+| 10 | **Ít nhất một trong Q2 hoặc Q3 đạt** | 2 phân tích kiểm định | Cả 2 đều ĐẠT (Q2 Spearman 0.6209; Q3 đủ 10 năm) | **ĐẠT**<br>*(Cả 2 đều ĐẠT)* | Bảng dữ liệu: `analytics.town_lease_gap`<br>Bảng dữ liệu: `analytics.price_index` | **Q2 ĐẠT:** 13 khu vực đủ điều kiện (ngưỡng >= 10), Spearman thứ hạng 0.6209 (ngưỡng >= 0.60).<br>**Q3 ĐẠT:** Đủ 10 năm liên tục từ 2017 đến 2026 cho 3 loại căn kèm 95% CI cụm block. |
+| 11 | **Q4 hoạt động với bộ lọc và không có điểm "đáng mua"** | Kiểm thử tương tác | 4 bộ lọc hoạt động chính xác, có cảnh báo bắt buộc, không xếp hạng | **ĐẠT** | Trang mã nguồn: [app/pages/4_Cong_cu_tim_khu.py](file:///d:/video/hdb_elt/app/pages/4_Cong_cu_tim_khu.py)<br>Ảnh màn hình: [docs/screenshots/budget_search.png](file:///d:/video/hdb_elt/docs/screenshots/budget_search.png) | Lọc theo Ngân sách, Loại căn, Thời hạn tối thiểu, Cự ly MRT. Có cảnh báo bắt buộc, ẩn khu vực dưới 10 giao dịch, không tạo điểm số hay xếp hạng "đáng mua". |
+| 12 | **Dashboard đọc dữ liệu thật và có trang vận hành** | Kiểm thử 6 trang | 6/6 trang kết nối trực tiếp `warehouse.duckdb` (244,119 dòng fact) | **ĐẠT** | Ứng dụng: [app/Home.py](file:///d:/video/hdb_elt/app/Home.py)<br>Trang vận hành: [app/pages/5_Van_hanh.py](file:///d:/video/hdb_elt/app/pages/5_Van_hanh.py) | Đọc trực tiếp từ kho `warehouse.duckdb` (244,119 dòng fact). Trang vận hành hiển thị lịch sử nạp dữ liệu và chi tiết 12 quy tắc Quality Gate. |
+| 13 | **Có ít nhất 7 lần chạy theo lịch, kể cả lần `no_change`** | 7 lần chạy hằng ngày (08:15 AM) | 0/7 lần theo lịch (đã có 1 lần chạy thử nghiệm lúc 17:08 ngày 04/11/2026, ExitCode: 0) | **ĐANG THEO DÕI**<br>*(0/7 lần theo lịch)* | Kịch bản: [scripts/register_task.ps1](file:///d:/video/hdb_elt/scripts/register_task.ps1)<br>Lịch sử: [logs/scheduler/schedule_history.json](file:///d:/video/hdb_elt/logs/scheduler/schedule_history.json) | Đã đăng ký tác vụ `\HDB_ELT_Daily_Run` trên Windows Task Scheduler chạy hàng ngày lúc 08:15 AM (Next Run: 05/11/2026 08:15 AM, Status: Ready). Đã chạy thử nghiệm thành công lúc 17:08 ngày 04/11/2026 (ExitCode: 0, log: `logs/scheduler/run_20261104_170831.log`, trạng thái HDB: `no_change`). Đang trong giai đoạn theo dõi tích lũy đủ 7 phiên chạy hằng ngày theo lịch. |
+| 14 | **README cho phép người khác chạy lại** | Kiểm tra tài liệu | Đầy đủ hướng dẫn môi trường, lệnh chạy, pipeline, test | **ĐẠT** | Hướng dẫn: [README.md](file:///d:/video/hdb_elt/README.md) | Cung cấp đầy đủ hướng dẫn thiết lập môi trường ảo, cài đặt package, thực thi pipeline, chạy dbt test, pytest và chạy Streamlit. |
+| 15 | **Báo cáo có giới hạn và nguồn dữ liệu** | Báo cáo hoàn chỉnh | Đầy đủ 13 phần Mục 13, đủ 11 giới hạn Mục 14 | **ĐẠT** | Báo cáo hoàn chỉnh: [report/report.md](file:///d:/video/hdb_elt/report/report.md) | Cấu trúc đầy đủ 13 phần theo mục 13 đặc tả, bao gồm đầy đủ 11 giới hạn bắt buộc theo mục 14. |
+| 16 | **Không có token hoặc dữ liệu raw lớn trong Git** | Kiểm tra Git index | `.gitignore` loại trừ `data/raw`, `data/warehouse`, `logs`, `.env` | **ĐẠT** | Cấu hình: [.gitignore](file:///d:/video/hdb_elt/.gitignore)<br>Kiểm tra `git status` | Git đã bỏ qua: `data/raw/`, `data/warehouse/`, `logs/`, `.env`. Không chứa bất kỳ token, secret, API key hay thông tin cá nhân nào. |
 
 ---
 
@@ -108,9 +108,9 @@ Kết quả thực thi lệnh `dbt test --profiles-dir .` tại thư mục `dbt_
 ## 4. Danh sách Chi tiết Kiểm thử Pytest
 
 Kết quả thực thi lệnh `pytest -v` tại thư mục gốc:
-- **Tổng số tests:** 10
-- **Kết quả chung:** **10/10 PASS (100%)**
-- **Thời gian thực thi:** 3.74 giây
+- **Tổng số tests:** 11
+- **Kết quả chung:** **11/11 PASS (100%)**
+- **Thời gian thực thi:** 3.60 giây (theo log thực tế)
 
 | STT | Tên bài kiểm thử Pytest | Tệp kiểm thử | Mục đích kiểm tra | Kết quả |
 |:---:|---|---|---|:---:|
@@ -124,6 +124,7 @@ Kết quả thực thi lệnh `pytest -v` tại thư mục gốc:
 | 8 | `test_quality_gate_failure_on_row_count_drop` | `test_quality_gate.py` | Chứng minh Quality Gate chặn xuất bản khi số dòng giảm quá 1% | **PASS** |
 | 9 | `test_quality_gate_failure_preserves_file_hash` | `test_quality_gate.py` | Chứng minh mã hash SHA-256 của `prod.duckdb` không thay đổi trước và sau lần xuất bản bị chặn | **PASS** |
 | 10 | `test_publish_behavior_when_read_connection_open_on_windows` | `test_quality_gate.py` | Kiểm tra hành vi khóa file trên Windows: bắt PermissionError khi có kết nối đọc mở, bảo toàn file, và xuất bản thành công sau khi đóng kết nối | **PASS** |
+| 11 | `test_publish_retry_exhausted_persists_lock_and_fails` | `test_quality_gate.py` | Giữ file khóa qua 5 lần retry theo cấu hình, kiểm tra kết quả trả về FAILED (False), xác nhận số lần retry đúng cấu hình (5 lần) và warehouse giữ nguyên mã băm SHA-256 | **PASS** |
 
 ---
 
@@ -138,7 +139,7 @@ Quy tắc phân tích tại `config/analysis_rules.yml` có mã băm SHA-256 xá
   - Nhóm `80-84 năm`: P1 = +0.0845 log points (+8.82%); P2 = +0.1673 log points (+18.21%).
   - Chênh lệch đo được: **0.0828 log points** (tương đương **9.39 điểm phần trăm** theo chênh lệch phần trăm).
   - Ngưỡng quy định: sai khác <= 0.05 (5 điểm phần trăm).
-  - **Trạng thái: FAIL.** Báo cáo trung thực sự thiếu ổn định của đường cong sau năm 2022 ở phân khúc căn hộ cận mới. Không đưa ra giả định nguyên nhân khi không có dữ liệu chứng minh.
+  - **Trạng thái: FAIL.** Báo cáo trung thực sự thiếu ổn định của đường cong sau năm 2022 ở nhóm thời hạn 80–84 năm. Không đưa ra giả định nguyên nhân khi không có dữ liệu chứng minh.
 
 ### 5.2. Q2. Mức chênh lệch theo khu vực — Kết luận: PASS
 - **Số khu vực đủ điều kiện (>= 200 giao dịch mỗi nhóm cả 2 thời kỳ):** **13 khu vực** (Đạt yêu cầu >= 10 khu).
@@ -167,8 +168,8 @@ Quy tắc phân tích tại `config/analysis_rules.yml` có mã băm SHA-256 xá
   - Giá trung vị thô toàn thị trường tăng từ 400,000 SGD lên 628,000 SGD (**+57.00%**, chỉ số đạt 157.00).
   - Chỉ số Hedonic kiểm soát đặc điểm căn hộ tăng từ 100.0 lên 158.87 (**+58.87%**, 95% CI: [158.34, 159.40]).
   - Độ lệch giữa chỉ số thô và chỉ số Hedonic ở năm 2025 là **-1.87 điểm chỉ số**.
-- **Dữ liệu năm 2026:** Ghi nhận là dữ liệu đến thời điểm hiện tại (11 tháng đầu năm 2026, 22,053 giao dịch), chỉ số thô đạt 158.75 (+58.75%), chỉ số Hedonic đạt 159.33 (+59.33%).
-- **Giai đoạn 2020–2022:** Đo nhận mức tăng chỉ số giá thô cao hơn chỉ số Hedonic (năm 2020: +3.14 điểm; năm 2021: +5.43 điểm; năm 2022: +2.61 điểm), phản ánh sự dịch chuyển cơ cấu căn hộ giao dịch. Báo cáo số đo thuần túy, không đưa ra giả định nguyên nhân ngoài phạm vi dữ liệu.
+- **Dữ liệu năm 2026:** Ghi nhận là dữ liệu đến thời điểm hiện tại (dữ liệu đến ngày 04/11/2026, 22,053 giao dịch), chỉ số thô đạt 158.75 (+58.75%), chỉ số Hedonic đạt 159.33 (+59.33%).
+- **Giai đoạn 2020–2022:** Đo nhận mức tăng chỉ số giá thô cao hơn chỉ số Hedonic (năm 2020: +3.14 điểm; năm 2021: +5.43 điểm; năm 2022: +2.61 điểm), diễn ra cùng lúc với thay đổi cơ cấu căn hộ giao dịch. Báo cáo số đo thực tế, không đưa ra giả định nguyên nhân ngoài phạm vi dữ liệu.
 
 ---
 
@@ -184,8 +185,8 @@ Quy tắc phân tích tại `config/analysis_rules.yml` có mã băm SHA-256 xá
 
 ## 7. Các Tồn tại Kỹ thuật Còn lại (Technical Debt)
 
-1. **Tích lũy 7 lần chạy theo lịch (Tiêu chí 13):** Tác vụ `HDB_ELT_Daily_Run` đã được đăng ký thành công vào Windows Task Scheduler và vận hành ổn định phiên đầu tiên. Cần duy trì hệ thống chạy hằng ngày vào lúc 08:15 trong 6 ngày tiếp theo để đủ 7 lần chạy thực tế theo quy định.
-2. **Đường cong Q1 trượt tiêu chí ổn định:** Sai khác tại nhóm 80-84 năm vượt ngưỡng 0.05 (5 điểm phần trăm), vi phạm giả định về tính bất biến thời gian của đường cong chiết khấu thời hạn thuê ở phân khúc cận mới.
+1. **Tích lũy 7 lần chạy theo lịch (Tiêu chí 13):** Tác vụ `\HDB_ELT_Daily_Run` đã được đăng ký thành công vào Windows Task Scheduler và vận hành ổn định phiên chạy thử nghiệm lúc 17:08 ngày 04/11/2026. Số lần chạy theo lịch hiện tại là 0/7 lần. Cần duy trì hệ thống chạy hằng ngày vào lúc 08:15 trong 7 ngày tiếp theo để đủ 7 lần chạy thực tế theo quy định.
+2. **Đường cong Q1 trượt tiêu chí ổn định:** Sai khác tại nhóm 80-84 năm vượt ngưỡng 0.05 (5 điểm phần trăm), vi phạm giả định về tính bất biến thời gian của đường cong chiết khấu thời hạn thuê ở nhóm thời hạn 80–84 năm.
 3. **Cự ly MRT và CBD:** Hiện tính theo đường thẳng Haversine, chưa tính theo khoảng cách đi bộ thực tế trên mạng lưới đường phố.
 4. **Hành vi khóa file trên Windows:** Khi có kết nối đọc đang mở tới `warehouse.duckdb` (ví dụ Streamlit dashboard), tiến trình xuất bản sẽ áp dụng cơ chế thử lại (tối đa 5 lần với khoảng trễ 1.0 giây). Nếu kho dữ liệu vẫn bị khóa sau 5 lần thử, quy trình giữ nguyên tệp kho dữ liệu hiện hành, dọn dẹp tệp hoán đổi tạm, ghi log FAILED và kết thúc an toàn mà không đóng tiến trình dashboard. Cần lưu ý sắp xếp thời điểm chạy pipeline vào khung giờ thấp điểm hoặc đóng phiên đọc khi cập nhật.
 

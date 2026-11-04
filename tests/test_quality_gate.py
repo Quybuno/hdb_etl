@@ -1,6 +1,7 @@
 import os
 import csv
 import hashlib
+import logging
 import duckdb
 import pytest
 from pipeline.quality_gate import run_quality_gate
@@ -158,3 +159,62 @@ def test_publish_behavior_when_read_connection_open_on_windows(tmp_path):
     assert success is True, "Publish must succeed once read lock is released"
     # The new database hash should now reflect the updated staging database
     assert get_file_sha256(prod_db) != hash_before
+
+def test_publish_retry_exhausted_persists_lock_and_fails(tmp_path):
+    # Kiem tra giu file khoa qua toan bo so lan retry theo cau hinh:
+    # 1. Giu file khoa qua so lan retry va kiem tra ket qua FAILED (False)
+    # 2. Kiem tra warehouse duckdb giu nguyen ma hash SHA-256
+    # 3. Kiem tra so lan retry dung theo cau hinh (max_retries = 5)
+    staging_db = str(tmp_path / "staging.duckdb")
+    prod_db = str(tmp_path / "prod.duckdb")
+    setup_dummy_duckdb(staging_db, row_count=300)
+    setup_dummy_duckdb(prod_db, row_count=100)
+
+    hash_before = get_file_sha256(prod_db)
+
+    class ListLogHandler(logging.Handler):
+        def __init__(self):
+            super().__init__()
+            self.records = []
+        def emit(self, record):
+            self.records.append(record)
+
+    test_logger = logging.getLogger("test_publish_retry_exhausted")
+    test_logger.setLevel(logging.DEBUG)
+    handler = ListLogHandler()
+    test_logger.addHandler(handler)
+
+    configured_retries = 5
+    con_reader = duckdb.connect(prod_db, read_only=True)
+    try:
+        # Giu file bi khoa qua toan bo so lan retry
+        success = publish_warehouse(
+            staging_db,
+            prod_db,
+            quality_passed=True,
+            max_retries=configured_retries,
+            retry_delay_sec=0.05,
+            logger=test_logger
+        )
+        # 1. Kiem tra ket qua FAILED
+        assert success is False, "Ket qua phai la FAILED (False) khi file bi khoa qua toan bo so lan retry"
+
+        # 2. Kiem tra warehouse giu nguyen hash
+        hash_after = get_file_sha256(prod_db)
+        assert hash_after == hash_before, f"Ma hash cua warehouse da bi thay doi! Truoc: {hash_before}, Sau: {hash_after}"
+
+        # 3. Kiem tra so lan retry dung theo cau hinh
+        retry_warnings = [
+            r.getMessage() for r in handler.records
+            if "Publish attempt" in r.getMessage() and "failed due to file lock" in r.getMessage()
+        ]
+        assert len(retry_warnings) == configured_retries, (
+            f"Ky vong {configured_retries} lan thu nhung ghi nhan {len(retry_warnings)} lan"
+        )
+
+        # Kiem tra co log ghi nhan trang thai publish FAILED
+        failed_logs = [r.getMessage() for r in handler.records if "FAILED" in r.getMessage()]
+        assert len(failed_logs) >= 1, "Phai ghi log thong bao FAILED khi het toan bo so lan retry"
+    finally:
+        con_reader.close()
+

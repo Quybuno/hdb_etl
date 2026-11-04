@@ -187,7 +187,7 @@
 **Kết luận Q3:**
 - **Kết luận chính (giai đoạn năm đầy đủ 2019 đến 2025):** Chỉ số giá thô toàn thị trường tăng +57.00% (từ trung vị $400,000 SGD lên $628,000 SGD), trong khi chỉ số Hedonic đã kiểm soát đặc điểm tăng +58.87% (95% CI: [158.34, 159.40]). Chênh lệch giữa giá thô và giá Hedonic ở năm đầy đủ gần nhất (2025) là -1.87 điểm chỉ số.
 - **Dữ liệu năm 2026:** Đây là dữ liệu tính đến thời điểm hiện tại (11 tháng đầu năm 2026, 22,053 giao dịch), chưa phải năm đầy đủ. Chỉ số thô đạt 158.75 (+58.75%), chỉ số Hedonic đạt 159.33 (+59.33%).
-- **Giai đoạn 2020-2022:** Đo nhận chỉ số giá thô cao hơn chỉ số Hedonic từ 2.61 đến 5.43 điểm chỉ số (năm 2020 lệch +3.14 điểm, năm 2021 lệch +5.43 điểm, năm 2022 lệch +2.61 điểm). Báo cáo số đo thuần túy, không đưa ra giả định nguyên nhân ngoài phạm vi dữ liệu.
+- **Giai đoạn 2020-2022:** Đo nhận chỉ số giá thô cao hơn chỉ số Hedonic từ 2.61 đến 5.43 điểm chỉ số (năm 2020 lệch +3.14 điểm, năm 2021 lệch +5.43 điểm, năm 2022 lệch +2.61 điểm). Báo cáo số đo thực tế, không đưa ra giả định nguyên nhân ngoài phạm vi dữ liệu.
 
 ---
 

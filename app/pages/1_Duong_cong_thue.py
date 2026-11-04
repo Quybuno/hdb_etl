@@ -115,6 +115,6 @@ st.info("""
 st.warning("""
 **⚠️ Giới hạn bắt buộc:**  
 - **Nhóm 90+ năm:** Căn hộ còn trên 90 năm thuê được phân tích và báo cáo riêng trong bảng số liệu do có thể bị ảnh hưởng đồng thời bởi các yếu tố mới xây.  
-- **Tương quan không phải nhân quả:** Đường cong phản ánh mức giá giao dịch thực tế trên thị trường, không hàm ý giá giảm thuần túy do hiệu ứng thời gian cơ học.
+- **Tương quan không phải nhân quả:** Đường cong phản ánh mức giá giao dịch trên thị trường theo các biến kiểm soát, không chứng minh quan hệ nhân quả hay đo lường hiệu ứng khấu hao cơ học độc lập.
 """)
 

@@ -12,7 +12,7 @@
 
 Hệ thống được thiết kế theo nguyên tắc Batch ELT tự động, bất biến và tự khôi phục:
 1. **Lịch trình tự động:** Đăng ký trực tiếp với hệ điều hành Windows qua công cụ `schtasks.exe`, không phụ thuộc vào các dịch vụ orchestration nặng như Airflow, Docker hay MinIO.
-2. **Nhật ký độc lập (Log per Run):** Mỗi lần thực thi tạo ra một tệp log riêng biệt theo dấu thời gian: `logs/scheduler/run_YYYYMMDD_HHMMSS.log`. Các tệp log cũ được bảo toàn tuyệt đối, không bao giờ bị ghi đè hay xóa.
+2. **Nhật ký độc lập (Log per Run):** Mỗi lần thực thi tạo ra một tệp log riêng biệt theo dấu thời gian: `logs/scheduler/run_YYYYMMDD_HHMMSS.log`. Các tệp log cũ được bảo toàn nguyên vẹn, không bao giờ bị ghi đè hay xóa.
 3. **Theo dõi lần chạy lỡ (Missed Runs Tracking):** Kịch bản tự động kiểm tra thời gian kể từ lần chạy thành công gần nhất. Nếu khoảng cách vượt quá 26 giờ (do máy tính tắt hoặc lỗi lịch), hệ thống ghi nhận cảnh báo vào `logs/scheduler/schedule_history.json`.
 4. **Bảo vệ khóa tệp trên Windows (File Lock Resilience):** Khi bảng điều khiển Streamlit đang kết nối đọc tới `warehouse.duckdb`, quy trình xuất bản áp dụng cơ chế thử lại (tối đa 5 lần, mỗi lần cách nhau 1.0 giây). Nếu sau 5 lần tệp vẫn bị khóa, hệ thống giữ nguyên tệp kho dữ liệu hiện tại, dọn dẹp tệp hoán đổi tạm, ghi trạng thái FAILED và kết thúc an toàn mà không đóng tiến trình dashboard.
 
@@ -64,3 +64,4 @@ Get-Content "logs\scheduler\schedule_history.json" | ConvertFrom-Json | Format-T
 Để hoàn tất Tiêu chí 13 của Mục 15 đặc tả, hệ thống cần duy trì hoạt động trong tối thiểu 7 ngày liên tiếp để tích lũy 7 bản ghi tại `logs/scheduler/schedule_history.json` và các tệp log tương ứng.
 - **Tình huống dữ liệu mới:** Pipeline nạp snapshot mới, chạy dbt build, phân tích lại và xuất bản.
 - **Tình huống không đổi (`no_change`):** Pipeline kiểm tra mã băm SHA-256 từ API, xác nhận dữ liệu không đổi, tạo manifest `no_change` mà không sao chép thừa CSV raw, nạp lại kho dữ liệu staging và xuất bản ổn định.
+
